@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma.service';
 import axios from 'axios';
 import { IAuthRepository } from '../interfaces/repository.interface';
 import { AppError } from '../../../common/errors/Error';
@@ -8,7 +7,7 @@ import { IJwtToken } from '../interfaces/auth.interface';
 
 @Injectable()
 export class AuthRepository implements IAuthRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor() {}
 
   private async almaRequest<T>(path: string, body: object): Promise<T> {
     try {
