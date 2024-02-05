@@ -13,7 +13,10 @@ export class CreateUserService {
 
   async execute(userData: CreateUserDto) {
     try {
-      const user = await this.userRepository.createUser(userData);
+      const user = await this.userRepository.createUser({
+        ...userData,
+        originChannel: 'KEEVO',
+      });
 
       return user;
     } catch (error) {
