@@ -14,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HttpExceptionFilter } from 'src/common/filter/http-exception.filter';
 import { AppError } from 'src/common/errors/Error';
+import { IUser } from './interfaces/user.interface';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('user')
@@ -24,7 +25,7 @@ export class UserController {
   ) {}
 
   @Post('/create')
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body() createUserDto: CreateUserDto): Promise<IUser> {
     return this.createUserService.execute(createUserDto);
   }
 

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { PrismaService } from '../../../prisma.service';
 import { AppError } from '../../../common/errors/Error';
 import { IUserRepository, IAlmaUser } from '../interfaces/repository.interface';
-import { CreateUserDtoWithChannel } from '../interfaces/user.interface';
+import { CreateUserDtoWithChannel, IUser } from '../interfaces/user.interface';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -37,7 +37,7 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async createUser(createUser: CreateUserDtoWithChannel) {
+  async createUser(createUser: CreateUserDtoWithChannel): Promise<IUser> {
     const signUpPath: string = process.env.SIGNUP_PATH;
 
     try {
@@ -56,7 +56,16 @@ export class UserRepository implements IUserRepository {
         },
       });
 
-      return user;
+      const { id, name, social_name, created_at, updated_at } = user;
+      const userResponse = {
+        id,
+        name,
+        socialName: social_name,
+        createdAt: created_at,
+        updatedAt: updated_at,
+      };
+
+      return userResponse;
     } catch (error) {
       const { status, message } = error || {};
 

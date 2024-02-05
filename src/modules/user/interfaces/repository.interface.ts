@@ -1,7 +1,7 @@
-import { CreateUserDtoWithChannel } from './user.interface';
+import { CreateUserDtoWithChannel, IUser } from './user.interface';
 
 export interface IUserRepository {
-  createUser(data: CreateUserDtoWithChannel);
+  createUser(data: CreateUserDtoWithChannel): Promise<IUser>;
 }
 
 export interface IAlmaUser {
