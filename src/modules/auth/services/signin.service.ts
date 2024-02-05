@@ -12,6 +12,6 @@ export class SignInService {
   ) {}
 
   execute(credentials: CredentialsDto): Promise<IJwtToken> {
-    return this.authRepository.signIn(credentials);
+    return this.authRepository.signIn({ ...credentials, origin: 'wophi' });
   }
 }

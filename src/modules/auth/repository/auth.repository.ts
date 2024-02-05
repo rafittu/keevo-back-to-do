@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { IAuthRepository } from '../interfaces/repository.interface';
 import { AppError } from '../../../common/errors/Error';
-import { CredentialsDto } from '../dto/user-credentials.dto';
+import { CredentialsDtoWithChannel } from '../dto/user-credentials.dto';
 import { IJwtToken } from '../interfaces/auth.interface';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class AuthRepository implements IAuthRepository {
     }
   }
 
-  async signIn(credentials: CredentialsDto): Promise<IJwtToken> {
+  async signIn(credentials: CredentialsDtoWithChannel): Promise<IJwtToken> {
     const signInPath: string = process.env.SIGNIN_PATH;
 
     try {
