@@ -21,6 +21,19 @@ enum TaskStatus {
   DONE
 }
 
+enum Categories {
+  WORK
+  STUDIES
+  PERSONAL
+  HEALTH
+  PROJECTS
+  SHOPPING
+  LEISURE
+  TRAVEL
+  FINANCES
+  EVENTS
+}
+
 model User {
   id          String   @id @unique @default(uuid()) @db.Uuid
   alma_id     String   @unique @db.Uuid
@@ -49,4 +62,13 @@ model Task {
   user User @relation("UserTasks", fields: [user_id], references: [id])
 
   @@map("tasks")
+}
+
+model Category {
+  id         String     @id @unique @default(uuid()) @db.Uuid
+  name       Categories
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt()
+
+  @@map("categories")
 }
