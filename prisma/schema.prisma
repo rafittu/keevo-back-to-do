@@ -7,6 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  DOING
+  HOLD
+  DONE
+}
+
 model User {
   id          String   @id @unique @default(uuid()) @db.Uuid
   alma_id     String   @unique @db.Uuid
@@ -15,5 +29,24 @@ model User {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt()
 
+  tasks Task[] @relation("UserTasks")
+
   @@map("users")
+}
+
+model Task {
+  id           String        @id @unique @default(uuid()) @db.Uuid
+  user_id      String        @unique @db.Uuid
+  title        String        @db.VarChar(250)
+  description  String        @db.VarChar(700)
+  priority     TaskPriority?
+  due_date     DateTime?
+  status       TaskStatus
+  completed_at DateTime?
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt()
+
+  user User @relation("UserTasks", fields: [user_id], references: [id])
+
+  @@map("tasks")
 }
