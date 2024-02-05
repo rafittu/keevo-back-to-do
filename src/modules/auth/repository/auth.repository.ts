@@ -14,8 +14,6 @@ export class AuthRepository implements IAuthRepository {
       const response = await axios.post(path, body);
       return response.data;
     } catch (error) {
-      console.log(error.response?.data);
-
       const { status, code, message } = error.response?.data?.error || {};
       throw new AppError(status, code, message);
     }
