@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface IUserToken {
   accessToken: string;
 }
@@ -14,4 +16,8 @@ export interface IUserFromJwt {
   almaId: string;
   username: string;
   email: string;
+}
+
+export interface IAuthRequest extends Request {
+  user: IUserFromJwt;
 }
