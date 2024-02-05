@@ -3,7 +3,7 @@ import axios from 'axios';
 import { IAuthRepository } from '../interfaces/repository.interface';
 import { AppError } from '../../../common/errors/Error';
 import { CredentialsDtoWithChannel } from '../dto/user-credentials.dto';
-import { IJwtToken } from '../interfaces/auth.interface';
+import { IUserToken } from '../interfaces/auth.interface';
 
 @Injectable()
 export class AuthRepository implements IAuthRepository {
@@ -19,11 +19,11 @@ export class AuthRepository implements IAuthRepository {
     }
   }
 
-  async signIn(credentials: CredentialsDtoWithChannel): Promise<IJwtToken> {
+  async signIn(credentials: CredentialsDtoWithChannel): Promise<IUserToken> {
     const signInPath: string = process.env.SIGNIN_PATH;
 
     try {
-      const { accessToken } = await this.almaRequest<IJwtToken>(
+      const { accessToken } = await this.almaRequest<IUserToken>(
         signInPath,
         credentials,
       );
