@@ -58,8 +58,10 @@ export class UserRepository implements IUserRepository {
 
       return user;
     } catch (error) {
+      const { status, message } = error || {};
+
       if (error instanceof AppError) {
-        throw error;
+        throw new AppError(status, 400, message);
       }
 
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
