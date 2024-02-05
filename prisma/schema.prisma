@@ -59,7 +59,8 @@ model Task {
   created_at   DateTime      @default(now())
   updated_at   DateTime      @updatedAt()
 
-  user User @relation("UserTasks", fields: [user_id], references: [id])
+  user         User           @relation("UserTasks", fields: [user_id], references: [id])
+  taskCategory TaskCategory[] @relation("TaskCategories")
 
   @@map("tasks")
 }
@@ -70,5 +71,18 @@ model Category {
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt()
 
+  tasks TaskCategory[] @relation("TaskCategories")
+
   @@map("categories")
+}
+
+model TaskCategory {
+  task_id     String @db.Uuid
+  category_id String @db.Uuid
+
+  task     Task     @relation("TaskCategories", fields: [task_id], references: [id])
+  category Category @relation("TaskCategories", fields: [category_id], references: [id])
+
+  @@unique([task_id, category_id])
+  @@map("task_categories")
 }
