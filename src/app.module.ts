@@ -16,6 +16,7 @@ import * as Joi from 'joi';
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_HOST_CONTAINER: Joi.string().required(),
         SIGNUP_PATH: Joi.string().required(),
+        SIGNIN_PATH: Joi.string().required(),
       }),
     }),
     UserModule,
