@@ -15,7 +15,7 @@ export class CreateUserService {
     try {
       const user = await this.userRepository.createUser({
         ...userData,
-        originChannel: 'KEEVO',
+        originChannel: 'WOPHI',
       });
 
       return user;
