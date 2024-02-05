@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { UserModule } from './modules/user/user.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -15,6 +16,7 @@ import * as Joi from 'joi';
         POSTGRES_HOST_CONTAINER: Joi.string().required(),
       }),
     }),
+    UserModule,
   ],
   controllers: [],
   providers: [],
