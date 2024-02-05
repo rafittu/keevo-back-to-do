@@ -4,7 +4,8 @@ import axios from 'axios';
 import { PrismaService } from '../../../prisma.service';
 import { AppError } from '../../../common/errors/Error';
 import { IUserRepository, IAlmaUser } from '../interfaces/repository.interface';
-import { CreateUserDtoWithChannel, IUser } from '../interfaces/user.interface';
+import { IUser } from '../interfaces/user.interface';
+import { CreateUserDtoWithChannel } from '../dto/create-user.dto';
 
 @Injectable()
 export class UserRepository implements IUserRepository {

@@ -1,4 +1,5 @@
-import { CreateUserDtoWithChannel, IUser } from './user.interface';
+import { CreateUserDtoWithChannel } from '../dto/create-user.dto';
+import { IUser } from './user.interface';
 
 export interface IUserRepository {
   createUser(data: CreateUserDtoWithChannel): Promise<IUser>;

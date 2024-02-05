@@ -80,3 +80,9 @@ export class CreateUserDto {
   })
   passwordConfirmation: string;
 }
+
+export class CreateUserDtoWithChannel extends CreateUserDto {
+  @IsNotEmpty()
+  @IsString()
+  originChannel: string;
+}
