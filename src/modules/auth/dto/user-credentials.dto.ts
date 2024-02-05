@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, IsNotEmpty } from 'class-validator';
 
 export class CredentialsDto {
   @IsEmail()
@@ -6,4 +6,10 @@ export class CredentialsDto {
 
   @IsString()
   password: string;
+}
+
+export class CredentialsDtoWithChannel extends CredentialsDto {
+  @IsNotEmpty()
+  @IsString()
+  origin: string;
 }
