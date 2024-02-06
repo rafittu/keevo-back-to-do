@@ -7,6 +7,7 @@ import { UserRepository } from '../repository/user.repository';
 import {
   MockAccessToken,
   MockCreateUserDto,
+  MockUpdateUserDto,
   MockUser,
   MockUserData,
   MockUserFromJwt,
@@ -105,6 +106,18 @@ describe('User Services', () => {
       );
 
       expect(userRepository.findById).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockUserData);
+    });
+  });
+
+  describe('update user', () => {
+    it('should update an user successfully', async () => {
+      const result = await updateUserService.execute(
+        MockAccessToken,
+        MockUpdateUserDto,
+      );
+
+      expect(userRepository.updateUser).toHaveBeenCalledTimes(1);
       expect(result).toEqual(MockUserData);
     });
   });
