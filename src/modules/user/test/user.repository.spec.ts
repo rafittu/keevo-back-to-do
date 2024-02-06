@@ -254,7 +254,7 @@ describe('UserRepository', () => {
     });
   });
 
-  describe('updateUser', () => {
+  describe('update user', () => {
     it('should update an user successfully', async () => {
       jest
         .spyOn(userRepository as any, 'almaRequest')
@@ -310,6 +310,63 @@ describe('UserRepository', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(500);
         expect(error.message).toBe('could not update user');
+      }
+    });
+  });
+
+  describe('delete user', () => {
+    it('should delete an user successfully', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(prismaService.user, 'delete')
+        .mockResolvedValueOnce(MockPrismaUser);
+
+      await userRepository.deleteUser(MockAccessToken, MockUserFromJwt.almaId);
+
+      expect(userRepository['almaRequest']).toHaveBeenCalledTimes(1);
+      expect(prismaService.user.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an AppError when almaRequest throws an error', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockRejectedValueOnce(
+          new AppError('error.code', 400, 'Error message'),
+        );
+
+      try {
+        await userRepository.deleteUser(
+          MockAccessToken,
+          MockUserFromJwt.almaId,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(400);
+        expect(error.message).toBe('Error message');
+      }
+    });
+
+    it('should throw an internal error', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(prismaService.user, 'delete')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        await userRepository.deleteUser(
+          MockAccessToken,
+          MockUserFromJwt.almaId,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('could not delete user');
       }
     });
   });
