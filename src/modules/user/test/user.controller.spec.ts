@@ -7,7 +7,8 @@ import { DeleteUserService } from '../services/delete-user.service';
 import {
   MockAccessToken,
   MockCreateUserDto,
-  MockIUser,
+  MockUpdateUserDto,
+  MockUser,
   MockUserData,
   MockUserFromJwt,
 } from './mocks/user.mock';
@@ -26,7 +27,7 @@ describe('UserController', () => {
         {
           provide: CreateUserService,
           useValue: {
-            execute: jest.fn().mockResolvedValue(MockIUser),
+            execute: jest.fn().mockResolvedValue(MockUser),
           },
         },
         {
@@ -66,7 +67,7 @@ describe('UserController', () => {
       const result = await controller.create(MockCreateUserDto);
 
       expect(createUserService.execute).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(MockIUser);
+      expect(result).toEqual(MockUser);
     });
 
     it('should throw an error', () => {
@@ -91,6 +92,28 @@ describe('UserController', () => {
 
       expect(
         controller.findOne(MockAccessToken, MockUserFromJwt),
+      ).rejects.toThrow();
+    });
+  });
+
+  describe('update user', () => {
+    it('should update an user successfully', async () => {
+      const result = await controller.update(
+        MockAccessToken,
+        MockUpdateUserDto,
+      );
+
+      expect(updateUserService.execute).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockUserData);
+    });
+
+    it('should throw an error', () => {
+      jest
+        .spyOn(updateUserService, 'execute')
+        .mockRejectedValueOnce(new Error());
+
+      expect(
+        controller.update(MockAccessToken, MockUpdateUserDto),
       ).rejects.toThrow();
     });
   });

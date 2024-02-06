@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { IUser, IUserData } from '../../interfaces/user.interface';
 import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
+import { UpdateUserDto } from '../../dto/update-user.dto';
 
 export const MockCreateUserDto: CreateUserDto = {
   firstName: faker.person.firstName(),
@@ -16,7 +17,7 @@ export const MockCreateUserDto: CreateUserDto = {
   passwordConfirmation: 'faker.internet.password()',
 };
 
-export const MockIUser: IUser = {
+export const MockUser: IUser = {
   id: faker.string.uuid(),
   name: `${MockCreateUserDto.firstName} ${MockCreateUserDto.lastName}`,
   socialName: MockCreateUserDto.socialName,
@@ -33,7 +34,7 @@ export const MockUserFromJwt: IUserFromJwt = {
 };
 
 export const MockUserData: IUserData = {
-  id: MockIUser.id,
+  id: MockUser.id,
   name: `${MockCreateUserDto.firstName} ${MockCreateUserDto.lastName}`,
   socialName: MockCreateUserDto.socialName,
   bornDate: MockCreateUserDto.bornDate,
@@ -42,6 +43,14 @@ export const MockUserData: IUserData = {
   email: MockCreateUserDto.email,
   phone: MockCreateUserDto.phone,
   status: 'PENDING_CONFIRMATION',
-  createdAt: MockIUser.createdAt,
-  updatedAt: MockIUser.updatedAt,
+  createdAt: MockUser.createdAt,
+  updatedAt: MockUser.updatedAt,
+};
+
+export const MockUpdateUserDto: UpdateUserDto = {
+  username: faker.internet.userName(),
+  email: faker.internet.email(),
+  oldPassword: faker.internet.password(),
+  newPassword: 'faker.internet.password()',
+  passwordConfirmation: 'faker.internet.password()',
 };
