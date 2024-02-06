@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { SignInService } from '../services/signin.service';
-import { MockAccessToken, MockUserCredentials } from './mocks/auth.mock';
+import {
+  MockAccessToken,
+  MockUserCredentials,
+  MockUserFromJwt,
+} from './mocks/auth.mock';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -35,6 +39,14 @@ describe('AuthController', () => {
 
       expect(signInService.execute).toHaveBeenCalledTimes(1);
       expect(result).toEqual(MockAccessToken);
+    });
+  });
+
+  describe('get user by access token decorator', () => {
+    it('should decode access token and return user payload', async () => {
+      const result = controller.getMe(MockUserFromJwt);
+
+      expect(result).toEqual(MockUserFromJwt);
     });
   });
 });
