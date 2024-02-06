@@ -15,7 +15,7 @@ export class UserRepository implements IUserRepository {
   private async almaRequest<T>(
     path: string,
     accessToken: string,
-    method: 'post' | 'get' | 'patch',
+    method: 'post' | 'get' | 'patch' | 'delete',
     body?: object,
   ): Promise<T> {
     try {
@@ -28,9 +28,11 @@ export class UserRepository implements IUserRepository {
       const response =
         method === 'post'
           ? await axios.post(path, body, config)
-          : method === 'patch'
-            ? await axios.patch(path, body, config)
-            : await axios.get(path, config);
+          : method === 'get'
+            ? await axios.get(path, config)
+            : method === 'patch'
+              ? await axios.patch(path, body, config)
+              : await axios.delete(path, config);
 
       return response.data;
     } catch (error) {
@@ -206,6 +208,35 @@ export class UserRepository implements IUserRepository {
         'user-repository.findById',
         500,
         'could not update user',
+      );
+    }
+  };
+
+  deleteUser = async (
+    accessToken: string,
+    userAlmaId: string,
+  ): Promise<void> => {
+    const deleteUserPath: string = process.env.DELETE_USER_PATH || '';
+
+    try {
+      await this.almaRequest<IAlmaUser>(deleteUserPath, accessToken, 'delete');
+
+      await this.prisma.user.delete({
+        where: {
+          alma_id: userAlmaId,
+        },
+      });
+    } catch (error) {
+      const { status, message } = error || {};
+
+      if (error instanceof AppError) {
+        throw new AppError(status, 400, message);
+      }
+
+      throw new AppError(
+        'user-repository.findById',
+        500,
+        'could not delete user',
       );
     }
   };

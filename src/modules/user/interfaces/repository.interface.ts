@@ -9,6 +9,7 @@ export interface IUserRepository {
     accessToken: string,
     dataToUpdate: UpdateUserDto,
   ): Promise<IUserData>;
+  deleteUser(accessToken: string, userAlmaId: string): Promise<void>;
 }
 
 export interface IAlmaUser {
