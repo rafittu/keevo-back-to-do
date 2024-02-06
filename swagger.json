@@ -1,0 +1,12 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Keevo To-do Backend API Documentation",
+      "description": "Back-end API for Keevo To-do application",
+      "contact": {
+        "name": "Rafael Ribeiro",
+        "email": "rafittu@outlook.com"
+      },
+      "version": "1.0.0"
+    }
+}
