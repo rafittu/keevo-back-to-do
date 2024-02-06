@@ -4,7 +4,13 @@ import { FindUserService } from '../services/find-user.service';
 import { UpdateUserService } from '../services/update-user.service';
 import { DeleteUserService } from '../services/delete-user.service';
 import { UserRepository } from '../repository/user.repository';
-import { MockCreateUserDto, MockUser } from './mocks/user.mock';
+import {
+  MockAccessToken,
+  MockCreateUserDto,
+  MockUser,
+  MockUserData,
+  MockUserFromJwt,
+} from './mocks/user.mock';
 import { AppError } from '../../../common/errors/Error';
 
 describe('User Services', () => {
@@ -26,8 +32,8 @@ describe('User Services', () => {
           provide: UserRepository,
           useValue: {
             createUser: jest.fn().mockResolvedValue(MockUser),
-            findById: jest.fn().mockResolvedValue(''),
-            updateUser: jest.fn().mockResolvedValue(''),
+            findById: jest.fn().mockResolvedValue(MockUserData),
+            updateUser: jest.fn().mockResolvedValue(MockUserData),
             deleteUser: jest.fn().mockResolvedValue(''),
           },
         },
@@ -88,6 +94,18 @@ describe('User Services', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(500);
       }
+    });
+  });
+
+  describe('find user by id', () => {
+    it('should get an user successfully', async () => {
+      const result = await findUserService.execute(
+        MockUserFromJwt.almaId,
+        MockAccessToken,
+      );
+
+      expect(userRepository.findById).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockUserData);
     });
   });
 });
