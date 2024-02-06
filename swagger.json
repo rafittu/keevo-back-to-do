@@ -8,5 +8,363 @@
         "email": "rafittu@outlook.com"
       },
       "version": "1.0.0"
+    },
+
+    "paths": {
+        "/user/create": {
+          "post": {
+            "summary": "Create user",
+            "description": "Route to register new users. A token with 30 minutes expiration time is sent to the provided email",
+            "tags": ["User"],
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SignUp"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "Example of a valid user registration",
+                      "value": {
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "socialName": "Joane Eod",
+                        "username": "jd",
+                        "bornDate": "1990-01-01",
+                        "motherName": "Jane Doe",
+                        "email": "johndoe@example.com",
+                        "phone": "1234567890",
+                        "password": "#Password123",
+                        "passwordConfirmation": "#Password123"
+                      }
+                    },
+                    "example2": {
+                      "summary": "Example of required fields only",
+                      "value": {
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "motherName": "Jane Doe",
+                        "phone": "1234567890",
+                        "email": "johndoe@example.com",
+                        "password": "#Password123",
+                        "passwordConfirmation": "#Password123"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "User created successfully",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/User"
+                    },
+                    "example": {
+                      "id": "123456",
+                      "name": "John Doe",
+                      "socialName": null,
+                      "createdAt": "2024-02-06T12:00:00Z",
+                      "updatedAt": "2024-02-06T12:00:00Z"
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Bad request",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "example": {
+                      "error": {
+                        "message": ["One or more fields are missing or invalid"],
+                        "code": "bad.request",
+                        "status": true
+                      },
+                      "data": {}
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "Forbidden",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "example": {
+                      "error": {
+                        "message": "invalid ip address",
+                        "code": "user-service.createUser",
+                        "status": true
+                      },
+                      "data": {}
+                    }
+                  }
+                }
+              },
+              "409": {
+                "description": "Conflict",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "examples": {
+                      "example1": {
+                        "summary": "field already in use by another user",
+                        "value": {
+                          "error": {
+                            "message": "[ 'email', 'phone' ] already in use",
+                            "code": "user-repository.createUser",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      },
+                      "example2": {
+                        "summary": "accessing new channel",
+                        "value": {
+                          "error": {
+                            "message": "User 'user.id' registered on [ user.allowed_channels ] platform. A confirmation token was sent to 'user.contact.email' and after confirmation, use the same credentials from 'user.allowed_channels' to access [ data.originChannel ].",
+                            "code": "user-service.createUser",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "422": {
+                "description": "Unprocessable Entity",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "example": {
+                      "error": {
+                        "message": "passwords do not match",
+                        "code": "user-service.createUser",
+                        "status": true
+                      },
+                      "data": {}
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Internal server error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+    
+                    "examples": {
+                      "example1": {
+                        "summary": "repository error",
+                        "value": {
+                          "error": {
+                            "message": "user not created",
+                            "code": "user-repository.createUser",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      },
+                      "example2": {
+                        "summary": "service error",
+                        "value": {
+                          "error": {
+                            "message": "failed to create user",
+                            "code": "user-service.createUser",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      },
+                      "example3": {
+                        "summary": "email service error",
+                        "value": {
+                          "error": {
+                            "message": "failed to send email for account confirmation",
+                            "code": "email-service.sendConfirmationEmail",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      },
+                      "example4": {
+                        "summary": "failed to send message to amazon simple queue service",
+                        "value": {
+                          "error": {
+                            "message": "failed to send message to SQS",
+                            "code": "email-service.sendMessageToSQS",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      },
+                      "example5": {
+                        "summary": "failed to poll messages from amazon simple queue service",
+                        "value": {
+                          "error": {
+                            "message": "error polling messages from SQS: `error message`",
+                            "code": "sqs-worker-service.pollMessagesFromSQS",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      },
+                      "example6": {
+                        "summary": "failed to process email",
+                        "value": {
+                          "error": {
+                            "message": "error processing message: `error message`",
+                            "code": "sqs-worker-service.processMessage",
+                            "status": true
+                          },
+                          "data": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+    },
+
+    "components": {
+        "schemas": {
+          "SignUp": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "maxLength": 125,
+                    "description": "First name of the user"
+                },
+                "lastName": {
+                    "type": "string",
+                    "maxLength": 125,
+                    "description": "Last name of the user"
+                },
+                "socialName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Social name of the user"
+                },
+                "bornDate": {
+                    "type": "string",
+                    "formate": "date-time",
+                    "description": "Date of birth of the user (yyyy-mm-dd)"
+                },
+                "motherName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Mother's name of the user"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "description": "Username of the user"
+                },
+                "email": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Email address of the user"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Phone number of the user"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": "7",
+                    "pattern": "at least one uppercase letter, one lowercase letter and one number or symbol",
+                    "description": "Password of the user"
+                },
+                "passwordConfirmation": {
+                    "type": "string",
+                    "description": "Password confirmation"
+                }
+            },
+            "required": [
+                "firstName",
+                "lastName",
+                "bornDate",
+                "motherName",
+                "email",
+                "phone",
+                "password",
+                "passwordConfirmation"
+            ]
+          },
+
+          "User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "User identification"
+                  },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the user"
+                },
+                "socialName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Social name of the user"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "description": "Date and time of user creation"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "description": "Date and time of last user update"
+                  }
+                
+            }
+          },
+
+          "Error": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Error message"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "Error code"
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "Error status"
+                  }
+                }
+              },
+              "data": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
     }
 }
