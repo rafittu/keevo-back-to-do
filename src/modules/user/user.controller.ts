@@ -4,11 +4,9 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   UseFilters,
 } from '@nestjs/common';
-import { UserService } from './services/user.service';
 import { CreateUserService } from './services/create-user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -21,15 +19,16 @@ import { IUserFromJwt } from '../auth/interfaces/auth.interface';
 import { FindUserService } from './services/find-user.service';
 import { AccessToken } from '../auth/infra/decorators/access-token.decortor';
 import { UpdateUserService } from './services/update-user.service';
+import { DeleteUserService } from './services/delete-user.service';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('user')
 export class UserController {
   constructor(
-    private readonly userService: UserService,
     private readonly createUserService: CreateUserService,
     private readonly findUserService: FindUserService,
     private readonly updateUserService: UpdateUserService,
+    private readonly deleteUserService: DeleteUserService,
   ) {}
 
   @isPublic()
@@ -54,8 +53,11 @@ export class UserController {
     return this.updateUserService.execute(accessToken, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Delete('/delete')
+  remove(
+    @AccessToken() accessToken: string,
+    @CurrentUser() user: IUserFromJwt,
+  ): Promise<void> {
+    return this.deleteUserService.execute(accessToken, user.almaId);
   }
 }
