@@ -11,655 +11,302 @@
     },
 
     "paths": {
-        "/user/create": {
-          "post": {
-            "summary": "Create user",
-            "description": "Route to register new users. A token with 30 minutes expiration time is sent to the provided email",
-            "tags": ["User"],
-            "requestBody": {
+      "/auth/signin": {
+        "post": {
+          "summary": "User login",
+          "description": "Authenticate a user with the provided credentials",
+          "tags": ["Authentication"],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserCredentials"
+                },
+                "example": {
+                  "email": "johndoe@example.com",
+                  "password": "password123"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User authenticated successfully",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/SignUp"
+                    "$ref": "#/components/schemas/AccessToken"
                   },
-                  "examples": {
-                    "example1": {
-                      "summary": "Example of a valid user registration",
-                      "value": {
-                        "firstName": "John",
-                        "lastName": "Doe",
-                        "socialName": "Joane Eod",
-                        "username": "jd",
-                        "bornDate": "1990-01-01",
-                        "motherName": "Jane Doe",
-                        "email": "johndoe@example.com",
-                        "phone": "1234567890",
-                        "password": "#Password123",
-                        "passwordConfirmation": "#Password123"
-                      }
-                    },
-                    "example2": {
-                      "summary": "Example of required fields only",
-                      "value": {
-                        "firstName": "John",
-                        "lastName": "Doe",
-                        "motherName": "Jane Doe",
-                        "phone": "1234567890",
-                        "email": "johndoe@example.com",
-                        "password": "#Password123",
-                        "passwordConfirmation": "#Password123"
-                      }
-                    }
+                  "example": {
+                    "accessToken": "eyJhbGciOiJ.eyJzdW5MDIyfQ.SflKxwk6yJV_adQssw5c"
                   }
                 }
               }
             },
-            "responses": {
-              "201": {
-                "description": "User created successfully",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/User"
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "email or password is invalid",
+                      "code": "local-auth.guards",
+                      "status": true
                     },
-                    "example": {
-                      "id": "123456",
-                      "name": "John Doe",
-                      "socialName": null,
-                      "createdAt": "2024-02-06T12:00:00Z",
-                      "updatedAt": "2024-02-06T12:00:00Z"
-                    }
+                    "data": {}
                   }
                 }
-              },
-              "400": {
-                "description": "Bad request",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Internal Server Error",
+                      "code": "internal.server.error",
+                      "status": true
                     },
-                    "example": {
-                      "error": {
-                        "message": ["One or more fields are missing or invalid"],
-                        "code": "bad.request",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "403": {
-                "description": "Forbidden",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "example": {
-                      "error": {
-                        "message": "invalid ip address",
-                        "code": "user-service.createUser",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "409": {
-                "description": "Conflict",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "examples": {
-                      "example1": {
-                        "summary": "field already in use by another user",
-                        "value": {
-                          "error": {
-                            "message": "[ 'email', 'phone' ] already in use",
-                            "code": "user-repository.createUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example2": {
-                        "summary": "accessing new channel",
-                        "value": {
-                          "error": {
-                            "message": "User 'user.id' registered on [ user.allowed_channels ] platform. A confirmation token was sent to 'user.contact.email' and after confirmation, use the same credentials from 'user.allowed_channels' to access [ data.originChannel ].",
-                            "code": "user-service.createUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "422": {
-                "description": "Unprocessable Entity",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "example": {
-                      "error": {
-                        "message": "passwords do not match",
-                        "code": "user-service.createUser",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "500": {
-                "description": "Internal server error",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-    
-                    "examples": {
-                      "example1": {
-                        "summary": "repository error",
-                        "value": {
-                          "error": {
-                            "message": "user not created",
-                            "code": "user-repository.createUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example2": {
-                        "summary": "service error",
-                        "value": {
-                          "error": {
-                            "message": "failed to create user",
-                            "code": "user-service.createUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example3": {
-                        "summary": "email service error",
-                        "value": {
-                          "error": {
-                            "message": "failed to send email for account confirmation",
-                            "code": "email-service.sendConfirmationEmail",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example4": {
-                        "summary": "failed to send message to amazon simple queue service",
-                        "value": {
-                          "error": {
-                            "message": "failed to send message to SQS",
-                            "code": "email-service.sendMessageToSQS",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example5": {
-                        "summary": "failed to poll messages from amazon simple queue service",
-                        "value": {
-                          "error": {
-                            "message": "error polling messages from SQS: `error message`",
-                            "code": "sqs-worker-service.pollMessagesFromSQS",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example6": {
-                        "summary": "failed to process email",
-                        "value": {
-                          "error": {
-                            "message": "error processing message: `error message`",
-                            "code": "sqs-worker-service.processMessage",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      }
-                    }
+                    "data": {}
                   }
                 }
               }
             }
           }
-        },
-        "/user": {
-          "get": {
-            "summary": "Get user",
-            "description": "Route to find user",
-            "tags": ["User"],
-            "security": [
-              {
-                "BearerAuth": []
-              }
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "required": true,
-                "description": "Bearer {token}",
+        }
+      },
+
+      "/user/create": {
+        "post": {
+          "summary": "Create user",
+          "description": "Route to register new users. A token with 30 minutes expiration time is sent to the provided email",
+          "tags": ["User"],
+          "requestBody": {
+            "content": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
-                }
-              }
-            ],            
-            "responses": {
-              "200": {
-                "description": "User data",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/UserData"
-                    },
-                    "example": {
-                      "id": "123456",
-                      "name": "John Doe",
-                      "socialName": null,
+                  "$ref": "#/components/schemas/SignUp"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example of a valid user registration",
+                    "value": {
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "socialName": "Joane Eod",
+                      "username": "jd",
                       "bornDate": "1990-01-01",
                       "motherName": "Jane Doe",
-                      "username": "johndoe",
                       "email": "johndoe@example.com",
                       "phone": "1234567890",
-                      "status": "ACTIVE",
-                      "createdAt": "2023-05-10T12:00:00Z",
-                      "updatedAt": "2023-05-11T12:00:00Z"
+                      "password": "#Password123",
+                      "passwordConfirmation": "#Password123"
                     }
-                  }
-                }
-              },
-              "401": {
-                "description": "Unauthorized",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "example": {
-                      "error": {
-                        "message": "Unauthorized",
-                        "code": "auth-guard.jwtAuth",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "404": {
-                "description": "Not found",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "example": {
-                      "error": {
-                        "message": "user not found",
-                        "code": "user-repository.findUserById",
-                        "status": true
-                      },
-                      "data": {}
+                  },
+                  "example2": {
+                    "summary": "Example of required fields only",
+                    "value": {
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "motherName": "Jane Doe",
+                      "phone": "1234567890",
+                      "email": "johndoe@example.com",
+                      "password": "#Password123",
+                      "passwordConfirmation": "#Password123"
                     }
                   }
                 }
               }
             }
-          }
-        },
-        "/user/update": {
-          "patch": {
-            "summary": "Update user",
-            "description": "Route to update user data. If updating account email, a token is sent to the provided email and has an expiration time of 30 minutes",
-            "tags": ["User"],
-            "security": [
-              {
-                "BearerAuth": []
-              }
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "required": true,
-                "description": "Bearer {token}",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            ],
-            "requestBody": {
-              "required": true,
+          },
+          "responses": {
+            "201": {
+              "description": "User created successfully",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/UpdateUser"
+                    "$ref": "#/components/schemas/User"
+                  },
+                  "example": {
+                    "id": "123456",
+                    "name": "John Doe",
+                    "socialName": null,
+                    "createdAt": "2024-02-06T12:00:00Z",
+                    "updatedAt": "2024-02-06T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": ["One or more fields are missing or invalid"],
+                      "code": "bad.request",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "invalid ip address",
+                      "code": "user-service.createUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
                   },
                   "examples": {
                     "example1": {
-                      "summary": "Example of updating password",
+                      "summary": "field already in use by another user",
                       "value": {
-                        "oldPassword": "password123",
-                        "newPassword": "newpassword",
-                        "passwordConfirmation": "newpassword"
+                        "error": {
+                          "message": "[ 'email', 'phone' ] already in use",
+                          "code": "user-repository.createUser",
+                          "status": true
+                        },
+                        "data": {}
                       }
                     },
                     "example2": {
-                      "summary": "Example of updating username and email",
+                      "summary": "accessing new channel",
                       "value": {
-                        "username": "Jd",
-                        "email": "jd@mail.com"
+                        "error": {
+                          "message": "User 'user.id' registered on [ user.allowed_channels ] platform. A confirmation token was sent to 'user.contact.email' and after confirmation, use the same credentials from 'user.allowed_channels' to access [ data.originChannel ].",
+                          "code": "user-service.createUser",
+                          "status": true
+                        },
+                        "data": {}
                       }
                     }
                   }
                 }
               }
             },
-            "responses": {
-              "200": {
-                "description": "User data",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/UserData"
+            "422": {
+              "description": "Unprocessable Entity",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "passwords do not match",
+                      "code": "user-service.createUser",
+                      "status": true
                     },
-                    "example": {
-                      "id": "123456",
-                      "name": "John Doe",
-                      "socialName": null,
-                      "bornDate": "1990-01-01",
-                      "motherName": "Jane Doe",
-                      "username": "joh",
-                      "email": "jd@mail.com",
-                      "phone": "1234567890",
-                      "status": "ACTIVE",
-                      "createdAt": "2023-05-10T12:00:00Z",
-                      "updatedAt": "2023-05-11T12:00:00Z"
-                    }
-                  }
-                }
-              },
-              "400": {
-                "description": "Bad request",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "examples": {
-                      "example1": {
-                        "summary": "invalid user id",
-                        "value": {
-                          "error": {
-                            "message": ["user id not found"],
-                            "code": "bad.request",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example2": {
-                        "summary": "invalid field",
-                        "value": {
-                          "error": {
-                            "message": [
-                              "One or more fields are missing or invalid"
-                            ],
-                            "code": "bad.request",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "401": {
-                "description": "Unauthorized",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "example": {
-                      "error": {
-                        "message": "Unauthorized",
-                        "code": "auth-guard.jwtAuth",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "403": {
-                "description": "Forbidden",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "example": {
-                      "error": {
-                        "message": "invalid ip address",
-                        "code": "user-service.updateUser",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "409": {
-                "description": "Conflict",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "example": {
-                      "error": {
-                        "message": "email/phone already taken",
-                        "code": "user-repository.createUser",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "422": {
-                "description": "Bad request",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "examples": {
-                      "example1": {
-                        "summary": "missing old password property",
-                        "value": {
-                          "error": {
-                            "message": "missing 'oldPassword' field",
-                            "code": "user-service.updateUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example2": {
-                        "summary": "validate new password",
-                        "value": {
-                          "error": {
-                            "message": "new passwords do not match",
-                            "code": "user-service.updateUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example3": {
-                        "summary": "validate old password",
-                        "value": {
-                          "error": {
-                            "message": "old passwords do not match",
-                            "code": "user-repository.updateUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "500": {
-                "description": "Internal server error",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
-                    },
-                    "examples": {
-                      "example1": {
-                        "summary": "repository internal error",
-                        "value": {
-                          "error": {
-                            "message": "user not updated",
-                            "code": "user-repository.updateUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example2": {
-                        "summary": "service internal error",
-                        "value": {
-                          "error": {
-                            "message": "failed to update user data",
-                            "code": "user-service.updateUser",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example3": {
-                        "summary": "failed to send message to amazon simple queue service",
-                        "value": {
-                          "error": {
-                            "message": "failed to send message to SQS",
-                            "code": "email-service.sendMessageToSQS",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example4": {
-                        "summary": "failed to poll messages from amazon simple queue service",
-                        "value": {
-                          "error": {
-                            "message": "error polling messages from SQS: `error message`",
-                            "code": "sqs-worker-service.pollMessagesFromSQS",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      },
-                      "example5": {
-                        "summary": "failed to process email",
-                        "value": {
-                          "error": {
-                            "message": "error processing message: `error message`",
-                            "code": "sqs-worker-service.processMessage",
-                            "status": true
-                          },
-                          "data": {}
-                        }
-                      }
-                    }
+                    "data": {}
                   }
                 }
               }
-            }
-          }
-        },
-        "/user/delete": {
-          "delete": {
-            "summary": "Delete account",
-            "description": "Route to delete user account. After this operation, user will receive the 'CANCELLED' status  and after 21 days if not reactivate, the account will be permanently deleted",
-            "tags": ["User"],
-            "security": [
-              {
-                "BearerAuth": []
-              }
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "required": true,
-                "description": "Bearer {token}",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            ],
-            "responses": {
-              "200": {
-                "description": "Ok"
-              },
-              "401": {
-                "description": "Unauthorized",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+  
+                  "examples": {
+                    "example1": {
+                      "summary": "repository error",
+                      "value": {
+                        "error": {
+                          "message": "user not created",
+                          "code": "user-repository.createUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
                     },
-                    "example": {
-                      "error": {
-                        "message": "Unauthorized",
-                        "code": "auth-guard.jwtAuth",
-                        "status": true
-                      },
-                      "data": {}
-                    }
-                  }
-                }
-              },
-              "500": {
-                "description": "Internal server error",
-                "content": {
-                  "application/json": {
-                    "schema": {
-                      "$ref": "#/components/schemas/Error"
+                    "example2": {
+                      "summary": "service error",
+                      "value": {
+                        "error": {
+                          "message": "failed to create user",
+                          "code": "user-service.createUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
                     },
-                    "example": {
-                      "error": {
-                        "message": "user not cancelled",
-                        "code": "user-repository.deleteUser",
-                        "status": true
-                      },
-                      "data": {}
+                    "example3": {
+                      "summary": "email service error",
+                      "value": {
+                        "error": {
+                          "message": "failed to send email for account confirmation",
+                          "code": "email-service.sendConfirmationEmail",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example4": {
+                      "summary": "failed to send message to amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "failed to send message to SQS",
+                          "code": "email-service.sendMessageToSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example5": {
+                      "summary": "failed to poll messages from amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "error polling messages from SQS: `error message`",
+                          "code": "sqs-worker-service.pollMessagesFromSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example6": {
+                      "summary": "failed to process email",
+                      "value": {
+                        "error": {
+                          "message": "error processing message: `error message`",
+                          "code": "sqs-worker-service.processMessage",
+                          "status": true
+                        },
+                        "data": {}
+                      }
                     }
                   }
                 }
@@ -667,6 +314,432 @@
             }
           }
         }
+      },
+      "/user": {
+        "get": {
+          "summary": "Get user",
+          "description": "Route to find user",
+          "tags": ["User"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],            
+          "responses": {
+            "200": {
+              "description": "User data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserData"
+                  },
+                  "example": {
+                    "id": "123456",
+                    "name": "John Doe",
+                    "socialName": null,
+                    "bornDate": "1990-01-01",
+                    "motherName": "Jane Doe",
+                    "username": "johndoe",
+                    "email": "johndoe@example.com",
+                    "phone": "1234567890",
+                    "status": "ACTIVE",
+                    "createdAt": "2023-05-10T12:00:00Z",
+                    "updatedAt": "2023-05-11T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "user not found",
+                      "code": "user-repository.findUserById",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/update": {
+        "patch": {
+          "summary": "Update user",
+          "description": "Route to update user data. If updating account email, a token is sent to the provided email and has an expiration time of 30 minutes",
+          "tags": ["User"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUser"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example of updating password",
+                    "value": {
+                      "oldPassword": "password123",
+                      "newPassword": "newpassword",
+                      "passwordConfirmation": "newpassword"
+                    }
+                  },
+                  "example2": {
+                    "summary": "Example of updating username and email",
+                    "value": {
+                      "username": "Jd",
+                      "email": "jd@mail.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserData"
+                  },
+                  "example": {
+                    "id": "123456",
+                    "name": "John Doe",
+                    "socialName": null,
+                    "bornDate": "1990-01-01",
+                    "motherName": "Jane Doe",
+                    "username": "joh",
+                    "email": "jd@mail.com",
+                    "phone": "1234567890",
+                    "status": "ACTIVE",
+                    "createdAt": "2023-05-10T12:00:00Z",
+                    "updatedAt": "2023-05-11T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "invalid user id",
+                      "value": {
+                        "error": {
+                          "message": ["user id not found"],
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "invalid field",
+                      "value": {
+                        "error": {
+                          "message": [
+                            "One or more fields are missing or invalid"
+                          ],
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "invalid ip address",
+                      "code": "user-service.updateUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "email/phone already taken",
+                      "code": "user-repository.createUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "missing old password property",
+                      "value": {
+                        "error": {
+                          "message": "missing 'oldPassword' field",
+                          "code": "user-service.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "validate new password",
+                      "value": {
+                        "error": {
+                          "message": "new passwords do not match",
+                          "code": "user-service.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example3": {
+                      "summary": "validate old password",
+                      "value": {
+                        "error": {
+                          "message": "old passwords do not match",
+                          "code": "user-repository.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "user not updated",
+                          "code": "user-repository.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "service internal error",
+                      "value": {
+                        "error": {
+                          "message": "failed to update user data",
+                          "code": "user-service.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example3": {
+                      "summary": "failed to send message to amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "failed to send message to SQS",
+                          "code": "email-service.sendMessageToSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example4": {
+                      "summary": "failed to poll messages from amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "error polling messages from SQS: `error message`",
+                          "code": "sqs-worker-service.pollMessagesFromSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example5": {
+                      "summary": "failed to process email",
+                      "value": {
+                        "error": {
+                          "message": "error processing message: `error message`",
+                          "code": "sqs-worker-service.processMessage",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/delete": {
+        "delete": {
+          "summary": "Delete account",
+          "description": "Route to delete user account. After this operation, user will receive the 'CANCELLED' status  and after 21 days if not reactivate, the account will be permanently deleted",
+          "tags": ["User"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Ok"
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "user not cancelled",
+                      "code": "user-repository.deleteUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
 
     "components": {
@@ -877,6 +950,28 @@
                   "BANNED"
                 ],
                 "description": "Status of the user"
+              }
+            }
+          },
+          "UserCredentials": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "Email address of the user"
+              },
+              "password": {
+                "type": "string",
+                "description": "Password of the user"
+              }
+            }
+          },
+          "AccessToken": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "description": "Access token used for authentication in subsequent API calls. This token should be included in the 'Authorization' header as a Bearer Token"
               }
             }
           },
