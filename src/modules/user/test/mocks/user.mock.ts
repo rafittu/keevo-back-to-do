@@ -85,6 +85,7 @@ export const MockUserData: IUserData = {
 
 export const MockUpdateUserDto: UpdateUserDto = {
   username: faker.internet.userName(),
+  socialName: faker.person.fullName(),
   email: faker.internet.email(),
   oldPassword: faker.internet.password(),
   newPassword: 'faker.internet.password()',

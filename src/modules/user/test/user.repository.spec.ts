@@ -11,6 +11,7 @@ import {
   MockCreateUserDto,
   MockGetUserAxiosResponse,
   MockPrismaUser,
+  MockUpdateUserDto,
   MockUser,
   MockUserData,
   MockUserFromJwt,
@@ -249,6 +250,66 @@ describe('UserRepository', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(500);
         expect(error.message).toBe('could not get user');
+      }
+    });
+  });
+
+  describe('updateUser', () => {
+    it('should update an user successfully', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(prismaService.user, 'update')
+        .mockResolvedValueOnce(MockPrismaUser);
+
+      jest
+        .spyOn(userRepository as any, 'formatUserResponse')
+        .mockResolvedValueOnce(MockUserData);
+
+      const result = await userRepository.updateUser(
+        MockAccessToken,
+        MockUpdateUserDto,
+      );
+
+      expect(userRepository['almaRequest']).toHaveBeenCalledTimes(1);
+      expect(userRepository['formatUserResponse']).toHaveBeenCalledTimes(1);
+      expect(prismaService.user.update).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockUserData);
+    });
+
+    it('should throw an AppError when almaRequest throws an error', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockRejectedValueOnce(
+          new AppError('error.code', 400, 'Error message'),
+        );
+
+      try {
+        await userRepository.updateUser(MockAccessToken, MockUpdateUserDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(400);
+        expect(error.message).toBe('Error message');
+      }
+    });
+
+    it('should throw an error if user not updated', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(prismaService.user, 'update')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        await userRepository.updateUser(MockAccessToken, MockUpdateUserDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('could not update user');
       }
     });
   });
