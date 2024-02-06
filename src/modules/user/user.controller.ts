@@ -14,7 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HttpExceptionFilter } from 'src/common/filter/http-exception.filter';
 import { AppError } from 'src/common/errors/Error';
-import { IUser } from './interfaces/user.interface';
+import { IUser, IUserData } from './interfaces/user.interface';
 import { isPublic } from '../auth/infra/decorators/is-public.decorator';
 import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
 import { IUserFromJwt } from '../auth/interfaces/auth.interface';
@@ -40,7 +40,7 @@ export class UserController {
   findOne(
     @AccessToken() accessToken: string,
     @CurrentUser() user: IUserFromJwt,
-  ) {
+  ): Promise<IUserData> {
     return this.findUserService.execute(user.almaId, accessToken);
   }
 

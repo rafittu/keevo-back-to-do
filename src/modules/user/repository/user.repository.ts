@@ -4,7 +4,7 @@ import axios from 'axios';
 import { PrismaService } from '../../../prisma.service';
 import { AppError } from '../../../common/errors/Error';
 import { IUserRepository, IAlmaUser } from '../interfaces/repository.interface';
-import { IUser } from '../interfaces/user.interface';
+import { IUser, IUserData } from '../interfaces/user.interface';
 import { CreateUserDtoWithChannel } from '../dto/create-user.dto';
 
 @Injectable()
@@ -86,7 +86,10 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  findById = async (userAlmaId: string, accessToken: string) => {
+  findById = async (
+    userAlmaId: string,
+    accessToken: string,
+  ): Promise<IUserData> => {
     const getUserPath: string = process.env.GET_USER_PATH || '';
 
     try {
