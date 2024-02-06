@@ -67,7 +67,7 @@ export class UserRepository implements IUserRepository {
   };
 
   async createUser(createUser: CreateUserDtoWithChannel): Promise<IUser> {
-    const signUpPath: string = process.env.SIGNUP_PATH || '';
+    const signUpPath: string = process.env.SIGNUP_PATH;
 
     try {
       const almaUser = await this.almaRequest<IAlmaUser>(
@@ -118,7 +118,7 @@ export class UserRepository implements IUserRepository {
     userAlmaId: string,
     accessToken: string,
   ): Promise<IUserData> => {
-    const getUserPath: string = process.env.GET_USER_PATH || '';
+    const getUserPath: string = process.env.GET_USER_PATH;
 
     try {
       const user = await this.prisma.user.findFirst({
@@ -151,7 +151,7 @@ export class UserRepository implements IUserRepository {
     accessToken: string,
     dataToUpdate: UpdateUserDto,
   ): Promise<IUserData> => {
-    const updateUserPath: string = process.env.UPDATE_USER_PATH || '';
+    const updateUserPath: string = process.env.UPDATE_USER_PATH;
 
     let userId: string;
 
@@ -203,7 +203,7 @@ export class UserRepository implements IUserRepository {
     accessToken: string,
     userAlmaId: string,
   ): Promise<void> => {
-    const deleteUserPath: string = process.env.DELETE_USER_PATH || '';
+    const deleteUserPath: string = process.env.DELETE_USER_PATH;
 
     try {
       await this.almaRequest<IAlmaUser>(deleteUserPath, accessToken, 'delete');
