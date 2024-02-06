@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { CreateUserDto } from '../../dto/create-user.dto';
-import { IUser } from '../../interfaces/user.interface';
+import { IUser, IUserData } from '../../interfaces/user.interface';
+import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
 
 export const MockCreateUserDto: CreateUserDto = {
   firstName: faker.person.firstName(),
@@ -21,4 +22,26 @@ export const MockIUser: IUser = {
   socialName: MockCreateUserDto.socialName,
   createdAt: new Date(),
   updatedAt: new Date(),
+};
+
+export const MockAccessToken = faker.string.alphanumeric();
+
+export const MockUserFromJwt: IUserFromJwt = {
+  almaId: faker.string.uuid(),
+  username: MockCreateUserDto.username,
+  email: MockCreateUserDto.email,
+};
+
+export const MockUserData: IUserData = {
+  id: MockIUser.id,
+  name: `${MockCreateUserDto.firstName} ${MockCreateUserDto.lastName}`,
+  socialName: MockCreateUserDto.socialName,
+  bornDate: MockCreateUserDto.bornDate,
+  motherName: MockCreateUserDto.motherName,
+  username: MockCreateUserDto.username,
+  email: MockCreateUserDto.email,
+  phone: MockCreateUserDto.phone,
+  status: 'PENDING_CONFIRMATION',
+  createdAt: MockIUser.createdAt,
+  updatedAt: MockIUser.updatedAt,
 };
