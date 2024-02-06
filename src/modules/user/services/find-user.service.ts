@@ -9,8 +9,8 @@ export class FindUserService {
     private userRepository: IUserRepository,
   ) {}
 
-  async execute(userId: string) {
-    const user = await this.userRepository.findOne(userId);
+  async execute(userAlmaId: string, accessToken: string) {
+    const user = await this.userRepository.findById(userAlmaId, accessToken);
 
     return user;
   }
