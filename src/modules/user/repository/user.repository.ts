@@ -41,6 +41,31 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  private formatUserResponse = (
+    userId: string,
+    almaUser: IAlmaUser,
+  ): IUserData => {
+    const { personal, contact, security, createdAt, updatedAt } = almaUser;
+
+    const { firstName, lastName, socialName, bornDate, motherName } = personal;
+    const { username, email, phone } = contact;
+    const { status } = security;
+
+    return {
+      id: userId,
+      name: `${firstName} ${lastName}`,
+      socialName,
+      bornDate,
+      motherName,
+      username,
+      email,
+      phone,
+      status,
+      createdAt,
+      updatedAt,
+    };
+  };
+
   async createUser(createUser: CreateUserDtoWithChannel): Promise<IUser> {
     const signUpPath: string = process.env.SIGNUP_PATH || '';
 
@@ -112,27 +137,7 @@ export class UserRepository implements IUserRepository {
         'get',
       );
 
-      const { id, name, created_at, updated_at } = user;
-      const { personal, contact, security } = almaUser;
-      const { socialName, bornDate, motherName } = personal;
-      const { username, email, phone } = contact;
-      const { status } = security;
-
-      const userResponse = {
-        id,
-        name,
-        socialName,
-        bornDate,
-        motherName,
-        username,
-        email,
-        phone,
-        status,
-        createdAt: created_at,
-        updatedAt: updated_at,
-      };
-
-      return userResponse;
+      return this.formatUserResponse(user.id, almaUser);
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
@@ -158,11 +163,7 @@ export class UserRepository implements IUserRepository {
         dataToUpdate,
       );
 
-      const { personal, contact, security, createdAt, updatedAt } = almaUser;
-      const { firstName, lastName, socialName, bornDate, motherName } =
-        personal;
-      const { username, email, phone } = contact;
-      const { status } = security;
+      const { firstName, lastName, socialName } = almaUser.personal;
 
       if (
         'firstName' in dataToUpdate ||
@@ -182,21 +183,7 @@ export class UserRepository implements IUserRepository {
         userId = user.id;
       }
 
-      const userResponse = {
-        id: userId,
-        name: `${firstName} ${lastName}`,
-        socialName,
-        bornDate,
-        motherName,
-        username,
-        email,
-        phone,
-        status,
-        createdAt,
-        updatedAt,
-      };
-
-      return userResponse;
+      return this.formatUserResponse(userId, almaUser);
     } catch (error) {
       const { status, message } = error || {};
 
