@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Prisma } from '@prisma/client';
 import axios from 'axios';
 import { PrismaService } from '../../../prisma.service';
 import { UserRepository } from '../repository/user.repository';
@@ -9,6 +10,7 @@ import {
   MockCreateUserAxiosResponse,
   MockCreateUserDto,
   MockGetUserAxiosResponse,
+  MockPrismaUser,
   MockUser,
   MockUserData,
 } from './mocks/user.mock';
@@ -17,6 +19,7 @@ jest.mock('axios');
 
 describe('UserRepository', () => {
   let userRepository: UserRepository;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -24,6 +27,7 @@ describe('UserRepository', () => {
     }).compile();
 
     userRepository = module.get<UserRepository>(UserRepository);
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -105,6 +109,94 @@ describe('UserRepository', () => {
         MockAlmaUser,
       );
       expect(result).toEqual(MockUserData);
+    });
+  });
+
+  describe('createUser', () => {
+    it('should create a new user successfully', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(prismaService.user, 'create')
+        .mockResolvedValueOnce(MockPrismaUser);
+
+      const result = await userRepository.createUser({
+        ...MockCreateUserDto,
+        originChannel: 'WOPHI',
+      });
+
+      expect(userRepository['almaRequest']).toHaveBeenCalledTimes(1);
+      expect(prismaService.user.create).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockUser);
+    });
+
+    it('should throw an AppError when almaRequest throws an error', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockRejectedValueOnce(
+          new AppError('error.code', 400, 'Error message'),
+        );
+
+      try {
+        await userRepository.createUser({
+          ...MockCreateUserDto,
+          originChannel: 'WOPHI',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(400);
+        expect(error.message).toBe('Error message');
+      }
+    });
+
+    it('should throw an AppError for PrismaClientKnownRequestError', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError(
+        'error message',
+        {
+          code: 'error code',
+          clientVersion: '',
+        },
+      );
+
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockRejectedValueOnce(prismaError);
+
+      try {
+        await userRepository.createUser({
+          ...MockCreateUserDto,
+          originChannel: 'WOPHI',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(400);
+        expect(error.message).toBe(
+          `[ '${error.meta?.target}' ] already in use`,
+        );
+      }
+    });
+
+    it('should throw an error if user is not created', async () => {
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(prismaService.user, 'create')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        await userRepository.createUser({
+          ...MockCreateUserDto,
+          originChannel: 'WOPHI',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('user not created');
+      }
     });
   });
 });
