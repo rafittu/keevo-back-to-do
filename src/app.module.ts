@@ -21,6 +21,7 @@ import { JwtAuthGuard } from './modules/auth/infra/guards/jwt-auth.guard';
         SIGNIN_PATH: Joi.string().required(),
         GET_USER_PATH: Joi.string().required(),
         UPDATE_USER_PATH: Joi.string().required(),
+        DELETE_USER_PATH: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
       }),
     }),
