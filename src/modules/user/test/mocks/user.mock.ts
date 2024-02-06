@@ -3,6 +3,7 @@ import { CreateUserDto } from '../../dto/create-user.dto';
 import { IUser, IUserData } from '../../interfaces/user.interface';
 import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
 import { UpdateUserDto } from '../../dto/update-user.dto';
+import { IAlmaUser } from '../../interfaces/repository.interface';
 
 export const MockCreateUserDto: CreateUserDto = {
   firstName: faker.person.firstName(),
@@ -53,4 +54,41 @@ export const MockUpdateUserDto: UpdateUserDto = {
   oldPassword: faker.internet.password(),
   newPassword: 'faker.internet.password()',
   passwordConfirmation: 'faker.internet.password()',
+};
+
+export const MockAlmaUser: IAlmaUser = {
+  id: MockUserFromJwt.almaId,
+  personal: {
+    id: faker.string.uuid(),
+    firstName: MockCreateUserDto.firstName,
+    lastName: MockCreateUserDto.lastName,
+    socialName: MockCreateUserDto.socialName,
+    bornDate: MockCreateUserDto.bornDate,
+    motherName: MockCreateUserDto.motherName,
+  },
+  contact: {
+    id: faker.string.uuid(),
+    username: MockCreateUserDto.username,
+    email: MockCreateUserDto.email,
+    phone: MockCreateUserDto.phone,
+  },
+  security: {
+    id: faker.string.uuid(),
+    status: faker.string.sample(),
+  },
+  allowedChannels: ['WOPHI'],
+  createdAt: faker.date.recent(),
+  updatedAt: faker.date.recent(),
+};
+
+export const MockCreateUserAxiosResponse = {
+  data: {
+    MockAlmaUser,
+  },
+};
+
+export const MockGetUserAxiosResponse = {
+  data: {
+    MockAlmaUser,
+  },
 };
