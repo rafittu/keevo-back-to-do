@@ -602,6 +602,70 @@
               }
             }
           }
+        },
+        "/user/delete": {
+          "delete": {
+            "summary": "Delete account",
+            "description": "Route to delete user account. After this operation, user will receive the 'CANCELLED' status  and after 21 days if not reactivate, the account will be permanently deleted",
+            "tags": ["User"],
+            "security": [
+              {
+                "BearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "required": true,
+                "description": "Bearer {token}",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Ok"
+              },
+              "401": {
+                "description": "Unauthorized",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "example": {
+                      "error": {
+                        "message": "Unauthorized",
+                        "code": "auth-guard.jwtAuth",
+                        "status": true
+                      },
+                      "data": {}
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Internal server error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "example": {
+                      "error": {
+                        "message": "user not cancelled",
+                        "code": "user-repository.deleteUser",
+                        "status": true
+                      },
+                      "data": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
     },
 
