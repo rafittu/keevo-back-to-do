@@ -13,6 +13,7 @@ import {
   MockPrismaUser,
   MockUser,
   MockUserData,
+  MockUserFromJwt,
 } from './mocks/user.mock';
 
 jest.mock('axios');
@@ -112,7 +113,7 @@ describe('UserRepository', () => {
     });
   });
 
-  describe('createUser', () => {
+  describe('create user', () => {
     it('should create a new user successfully', async () => {
       jest
         .spyOn(userRepository as any, 'almaRequest')
@@ -196,6 +197,58 @@ describe('UserRepository', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(500);
         expect(error.message).toBe('user not created');
+      }
+    });
+  });
+
+  describe('find one', () => {
+    it('should find an user by id successfully', async () => {
+      jest
+        .spyOn(prismaService.user, 'findFirst')
+        .mockResolvedValueOnce(MockPrismaUser);
+
+      jest
+        .spyOn(userRepository as any, 'almaRequest')
+        .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(userRepository as any, 'formatUserResponse')
+        .mockResolvedValueOnce(MockUserData);
+
+      const result = await userRepository.findById(
+        MockUserFromJwt.almaId,
+        MockAccessToken,
+      );
+
+      expect(prismaService.user.findFirst).toHaveBeenCalledTimes(1);
+      expect(userRepository['almaRequest']).toHaveBeenCalledTimes(1);
+      expect(userRepository['formatUserResponse']).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockUserData);
+    });
+
+    it('should throw a not found error', async () => {
+      jest.spyOn(prismaService.user, 'findFirst').mockResolvedValueOnce(null);
+
+      try {
+        await userRepository.findById(MockUserFromJwt.almaId, MockAccessToken);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(404);
+        expect(error.message).toBe('user not found');
+      }
+    });
+
+    it('should throw an internal error', async () => {
+      jest
+        .spyOn(prismaService.user, 'findFirst')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        await userRepository.findById(MockUserFromJwt.almaId, MockAccessToken);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('could not get user');
       }
     });
   });
