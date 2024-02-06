@@ -74,11 +74,11 @@ export const MockAlmaUser: IAlmaUser = {
   },
   security: {
     id: faker.string.uuid(),
-    status: faker.string.sample(),
+    status: 'PENDING_CONFIRMATION',
   },
   allowedChannels: ['WOPHI'],
-  createdAt: faker.date.recent(),
-  updatedAt: faker.date.recent(),
+  createdAt: MockUser.createdAt,
+  updatedAt: MockUser.updatedAt,
 };
 
 export const MockCreateUserAxiosResponse = {

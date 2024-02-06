@@ -5,9 +5,12 @@ import { UserRepository } from '../repository/user.repository';
 import { AppError } from '../../../common/errors/Error';
 import {
   MockAccessToken,
+  MockAlmaUser,
   MockCreateUserAxiosResponse,
   MockCreateUserDto,
   MockGetUserAxiosResponse,
+  MockUser,
+  MockUserData,
 } from './mocks/user.mock';
 
 jest.mock('axios');
@@ -92,6 +95,16 @@ describe('UserRepository', () => {
         expect(error.code).toBe(500);
         expect(error.message).toBe('Internal server error');
       }
+    });
+  });
+
+  describe('format user responses', () => {
+    it('should format user properties to camelCase', () => {
+      const result = userRepository['formatUserResponse'](
+        MockUser.id,
+        MockAlmaUser,
+      );
+      expect(result).toEqual(MockUserData);
     });
   });
 });
