@@ -4,6 +4,7 @@ import { IUser, IUserData } from '../../interfaces/user.interface';
 import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
 import { UpdateUserDto } from '../../dto/update-user.dto';
 import { IAlmaUser } from '../../interfaces/repository.interface';
+import { User } from '@prisma/client';
 
 export const MockCreateUserDto: CreateUserDto = {
   firstName: faker.person.firstName(),
@@ -18,46 +19,8 @@ export const MockCreateUserDto: CreateUserDto = {
   passwordConfirmation: 'faker.internet.password()',
 };
 
-export const MockUser: IUser = {
-  id: faker.string.uuid(),
-  name: `${MockCreateUserDto.firstName} ${MockCreateUserDto.lastName}`,
-  socialName: MockCreateUserDto.socialName,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-export const MockAccessToken = faker.string.alphanumeric();
-
-export const MockUserFromJwt: IUserFromJwt = {
-  almaId: faker.string.uuid(),
-  username: MockCreateUserDto.username,
-  email: MockCreateUserDto.email,
-};
-
-export const MockUserData: IUserData = {
-  id: MockUser.id,
-  name: `${MockCreateUserDto.firstName} ${MockCreateUserDto.lastName}`,
-  socialName: MockCreateUserDto.socialName,
-  bornDate: MockCreateUserDto.bornDate,
-  motherName: MockCreateUserDto.motherName,
-  username: MockCreateUserDto.username,
-  email: MockCreateUserDto.email,
-  phone: MockCreateUserDto.phone,
-  status: 'PENDING_CONFIRMATION',
-  createdAt: MockUser.createdAt,
-  updatedAt: MockUser.updatedAt,
-};
-
-export const MockUpdateUserDto: UpdateUserDto = {
-  username: faker.internet.userName(),
-  email: faker.internet.email(),
-  oldPassword: faker.internet.password(),
-  newPassword: 'faker.internet.password()',
-  passwordConfirmation: 'faker.internet.password()',
-};
-
 export const MockAlmaUser: IAlmaUser = {
-  id: MockUserFromJwt.almaId,
+  id: faker.string.uuid(),
   personal: {
     id: faker.string.uuid(),
     firstName: MockCreateUserDto.firstName,
@@ -77,8 +40,55 @@ export const MockAlmaUser: IAlmaUser = {
     status: 'PENDING_CONFIRMATION',
   },
   allowedChannels: ['WOPHI'],
-  createdAt: MockUser.createdAt,
-  updatedAt: MockUser.updatedAt,
+  createdAt: faker.date.recent(),
+  updatedAt: faker.date.recent(),
+};
+
+export const MockPrismaUser: User = {
+  id: faker.string.uuid(),
+  alma_id: MockAlmaUser.id,
+  name: `${MockCreateUserDto.firstName} ${MockCreateUserDto.lastName}`,
+  social_name: MockCreateUserDto.socialName,
+  created_at: faker.date.recent(),
+  updated_at: faker.date.recent(),
+};
+
+export const MockUser: IUser = {
+  id: MockPrismaUser.id,
+  name: MockPrismaUser.name,
+  socialName: MockPrismaUser.social_name,
+  createdAt: MockPrismaUser.created_at,
+  updatedAt: MockPrismaUser.updated_at,
+};
+
+export const MockAccessToken = faker.string.alphanumeric();
+
+export const MockUserFromJwt: IUserFromJwt = {
+  almaId: MockAlmaUser.id,
+  username: MockAlmaUser.contact.username,
+  email: MockAlmaUser.contact.email,
+};
+
+export const MockUserData: IUserData = {
+  id: MockUser.id,
+  name: MockUser.name,
+  socialName: MockUser.socialName,
+  bornDate: MockAlmaUser.personal.bornDate,
+  motherName: MockAlmaUser.personal.motherName,
+  username: MockAlmaUser.contact.username,
+  email: MockAlmaUser.contact.email,
+  phone: MockAlmaUser.contact.phone,
+  status: 'PENDING_CONFIRMATION',
+  createdAt: MockAlmaUser.createdAt,
+  updatedAt: MockAlmaUser.updatedAt,
+};
+
+export const MockUpdateUserDto: UpdateUserDto = {
+  username: faker.internet.userName(),
+  email: faker.internet.email(),
+  oldPassword: faker.internet.password(),
+  newPassword: 'faker.internet.password()',
+  passwordConfirmation: 'faker.internet.password()',
 };
 
 export const MockCreateUserAxiosResponse = {
