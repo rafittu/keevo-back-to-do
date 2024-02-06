@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../auth.controller';
 import { SignInService } from '../services/signin.service';
-import { MockAccessToken } from './mocks/auth.mock';
+import { MockAccessToken, MockUserCredentials } from './mocks/auth.mock';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -27,5 +27,14 @@ describe('AuthController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('user signin', () => {
+    it('user should sign in successfully', async () => {
+      const result = await controller.signIn(MockUserCredentials);
+
+      expect(signInService.execute).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockAccessToken);
+    });
   });
 });
