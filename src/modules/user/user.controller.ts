@@ -19,6 +19,7 @@ import { isPublic } from '../auth/infra/decorators/is-public.decorator';
 import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
 import { IUserFromJwt } from '../auth/interfaces/auth.interface';
 import { FindUserService } from './services/find-user.service';
+import { AccessToken } from '../auth/infra/decorators/access-token.decortor';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('user')
@@ -36,8 +37,11 @@ export class UserController {
   }
 
   @Get('/')
-  findOne(@CurrentUser() user: IUserFromJwt) {
-    return this.findUserService.execute(user.almaId);
+  findOne(
+    @AccessToken() accessToken: string,
+    @CurrentUser() user: IUserFromJwt,
+  ) {
+    return this.findUserService.execute(user.almaId, accessToken);
   }
 
   @Patch(':id')
