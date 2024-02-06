@@ -10,8 +10,8 @@ import {
 import { CreateUserService } from './services/create-user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { HttpExceptionFilter } from 'src/common/filter/http-exception.filter';
-import { AppError } from 'src/common/errors/Error';
+import { HttpExceptionFilter } from '../../common/filter/http-exception.filter';
+import { AppError } from '../../common/errors/Error';
 import { IUser, IUserData } from './interfaces/user.interface';
 import { isPublic } from '../auth/infra/decorators/is-public.decorator';
 import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
