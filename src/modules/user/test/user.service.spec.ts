@@ -35,7 +35,7 @@ describe('User Services', () => {
             createUser: jest.fn().mockResolvedValue(MockUser),
             findById: jest.fn().mockResolvedValue(MockUserData),
             updateUser: jest.fn().mockResolvedValue(MockUserData),
-            deleteUser: jest.fn().mockResolvedValue(''),
+            deleteUser: jest.fn().mockResolvedValue(null),
           },
         },
       ],
@@ -119,6 +119,18 @@ describe('User Services', () => {
 
       expect(userRepository.updateUser).toHaveBeenCalledTimes(1);
       expect(result).toEqual(MockUserData);
+    });
+  });
+
+  describe('delete user', () => {
+    it('should delete an user successfully', async () => {
+      const result = await deleteUserService.execute(
+        MockUserFromJwt.almaId,
+        MockAccessToken,
+      );
+
+      expect(userRepository.deleteUser).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(null);
     });
   });
 });
