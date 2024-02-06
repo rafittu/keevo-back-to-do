@@ -6,6 +6,7 @@ import { AppError } from '../../../common/errors/Error';
 import { IUserRepository, IAlmaUser } from '../interfaces/repository.interface';
 import { IUser, IUserData } from '../interfaces/user.interface';
 import { CreateUserDtoWithChannel } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
@@ -136,6 +137,76 @@ export class UserRepository implements IUserRepository {
       }
 
       throw new AppError('user-repository.findById', 500, 'could not get user');
+    }
+  };
+
+  updateUser = async (
+    accessToken: string,
+    dataToUpdate: UpdateUserDto,
+  ): Promise<IUserData> => {
+    const updateUserPath: string = process.env.UPDATE_USER_PATH || '';
+
+    let userId: string;
+
+    try {
+      const almaUser = await this.almaRequest<IAlmaUser>(
+        updateUserPath,
+        accessToken,
+        'patch',
+        dataToUpdate,
+      );
+
+      const { personal, contact, security, createdAt, updatedAt } = almaUser;
+      const { firstName, lastName, socialName, bornDate, motherName } =
+        personal;
+      const { username, email, phone } = contact;
+      const { status } = security;
+
+      if (
+        'firstName' in dataToUpdate ||
+        'lastName' in dataToUpdate ||
+        'socialName' in dataToUpdate
+      ) {
+        const user = await this.prisma.user.update({
+          data: {
+            name: `${firstName} ${lastName}`,
+            social_name: socialName,
+          },
+          where: {
+            alma_id: almaUser.id,
+          },
+        });
+
+        userId = user.id;
+      }
+
+      const userResponse = {
+        id: userId,
+        name: `${firstName} ${lastName}`,
+        socialName,
+        bornDate,
+        motherName,
+        username,
+        email,
+        phone,
+        status,
+        createdAt,
+        updatedAt,
+      };
+
+      return userResponse;
+    } catch (error) {
+      const { status, message } = error || {};
+
+      if (error instanceof AppError) {
+        throw new AppError(status, 400, message);
+      }
+
+      throw new AppError(
+        'user-repository.findById',
+        500,
+        'could not update user',
+      );
     }
   };
 }

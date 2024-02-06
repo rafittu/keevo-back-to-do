@@ -1,9 +1,14 @@
 import { CreateUserDtoWithChannel } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { IUser, IUserData } from './user.interface';
 
 export interface IUserRepository {
   createUser(data: CreateUserDtoWithChannel): Promise<IUser>;
   findById(userAlmaId: string, accessToken: string): Promise<IUserData>;
+  updateUser(
+    accessToken: string,
+    dataToUpdate: UpdateUserDto,
+  ): Promise<IUserData>;
 }
 
 export interface IAlmaUser {

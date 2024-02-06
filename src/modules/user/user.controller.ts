@@ -20,6 +20,7 @@ import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
 import { IUserFromJwt } from '../auth/interfaces/auth.interface';
 import { FindUserService } from './services/find-user.service';
 import { AccessToken } from '../auth/infra/decorators/access-token.decortor';
+import { UpdateUserService } from './services/update-user.service';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('user')
@@ -28,6 +29,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly createUserService: CreateUserService,
     private readonly findUserService: FindUserService,
+    private readonly updateUserService: UpdateUserService,
   ) {}
 
   @isPublic()
@@ -44,9 +46,12 @@ export class UserController {
     return this.findUserService.execute(user.almaId, accessToken);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Patch('/update')
+  update(
+    @AccessToken() accessToken: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<IUserData> {
+    return this.updateUserService.execute(accessToken, updateUserDto);
   }
 
   @Delete(':id')
