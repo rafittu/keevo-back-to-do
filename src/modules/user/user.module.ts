@@ -6,6 +6,7 @@ import { CreateUserService } from './services/create-user.service';
 
 import { UserService } from './services/user.service';
 import { FindUserService } from './services/find-user.service';
+import { UpdateUserService } from './services/update-user.service';
 
 @Module({
   controllers: [UserController],
@@ -15,6 +16,7 @@ import { FindUserService } from './services/find-user.service';
     CreateUserService,
     FindUserService,
     UserService,
+    UpdateUserService,
   ],
 })
 export class UserModule {}
