@@ -1,6 +1,6 @@
 import { Controller, Post, Body, UseFilters, Get } from '@nestjs/common';
-import { HttpExceptionFilter } from 'src/common/filter/http-exception.filter';
-import { AppError } from 'src/common/errors/Error';
+import { HttpExceptionFilter } from '../../common/filter/http-exception.filter';
+import { AppError } from '../../common/errors/Error';
 import { SignInService } from './services/signin.service';
 import { CredentialsDto } from './dto/user-credentials.dto';
 import { IUserFromJwt, IUserToken } from './interfaces/auth.interface';
