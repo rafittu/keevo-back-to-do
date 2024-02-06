@@ -117,4 +117,22 @@ describe('UserController', () => {
       ).rejects.toThrow();
     });
   });
+
+  describe('delete user', () => {
+    it('should delete an user successfully', async () => {
+      await controller.remove(MockAccessToken, MockUserFromJwt);
+
+      expect(deleteUserService.execute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an error', () => {
+      jest
+        .spyOn(deleteUserService, 'execute')
+        .mockRejectedValueOnce(new Error());
+
+      expect(
+        controller.remove(MockAccessToken, MockUserFromJwt),
+      ).rejects.toThrow();
+    });
+  });
 });
