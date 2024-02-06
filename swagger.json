@@ -241,6 +241,90 @@
               }
             }
           }
+        },
+        "/user": {
+          "get": {
+            "summary": "Get user",
+            "description": "Route to find user",
+            "tags": ["User"],
+            "security": [
+              {
+                "BearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "required": true,
+                "description": "Bearer {token}",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],            
+            "responses": {
+              "200": {
+                "description": "User data",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/UserData"
+                    },
+                    "example": {
+                      "id": "123456",
+                      "name": "John Doe",
+                      "socialName": null,
+                      "bornDate": "1990-01-01",
+                      "motherName": "Jane Doe",
+                      "username": "johndoe",
+                      "email": "johndoe@example.com",
+                      "phone": "1234567890",
+                      "status": "ACTIVE",
+                      "createdAt": "2023-05-10T12:00:00Z",
+                      "updatedAt": "2023-05-11T12:00:00Z"
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "Unauthorized",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "example": {
+                      "error": {
+                        "message": "Unauthorized",
+                        "code": "auth-guard.jwtAuth",
+                        "status": true
+                      },
+                      "data": {}
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "Not found",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    },
+                    "example": {
+                      "error": {
+                        "message": "user not found",
+                        "code": "user-repository.findUserById",
+                        "status": true
+                      },
+                      "data": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
     },
 
@@ -310,7 +394,6 @@
                 "passwordConfirmation"
             ]
           },
-
           "User": {
             "type": "object",
             "properties": {
@@ -326,6 +409,64 @@
                     "type": "string",
                     "maxLength": 250,
                     "description": "Social name of the user"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "description": "Date and time of user creation"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "description": "Date and time of last user update"
+                  }
+                
+            }
+          },
+          "UserData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "User identification"
+                  },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the user"
+                },
+                "socialName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Social name of the user"
+                },
+                "bornDate": {
+                  "type": "string",
+                  "description": "Date of birth of the user"
+                },
+                "motherName": {
+                  "type": "string",
+                  "description": "Mother's name of the user"
+                },
+                "username": {
+                  "type": "string",
+                  "description": "Username of the user"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email address of the user"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Phone number of the user"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING_CONFIRMATION",
+                    "ACTIVE",
+                    "BLOCKED",
+                    "CANCELLED",
+                    "BANNED"
+                  ],
+                  "description": "User status"
                 },
                 "createdAt": {
                     "type": "string",
@@ -363,6 +504,13 @@
                 "type": "object",
                 "properties": {}
               }
+            }
+          },
+          "securitySchemes": {
+            "BearerAuth": {
+              "type": "http",
+              "scheme": "bearer",
+              "bearerFormat": "JWT"
             }
           }
         }
