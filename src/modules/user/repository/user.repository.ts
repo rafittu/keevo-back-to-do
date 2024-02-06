@@ -15,7 +15,7 @@ export class UserRepository implements IUserRepository {
   private async almaRequest<T>(
     path: string,
     accessToken: string,
-    method: 'post' | 'get' | 'patch',
+    method: 'post' | 'get' | 'patch' | 'delete',
     body?: object,
   ): Promise<T> {
     try {
@@ -28,9 +28,11 @@ export class UserRepository implements IUserRepository {
       const response =
         method === 'post'
           ? await axios.post(path, body, config)
-          : method === 'patch'
-            ? await axios.patch(path, body, config)
-            : await axios.get(path, config);
+          : method === 'get'
+            ? await axios.get(path, config)
+            : method === 'patch'
+              ? await axios.patch(path, body, config)
+              : await axios.delete(path, config);
 
       return response.data;
     } catch (error) {
@@ -38,6 +40,31 @@ export class UserRepository implements IUserRepository {
       throw new AppError(status, code, message);
     }
   }
+
+  private formatUserResponse = (
+    userId: string,
+    almaUser: IAlmaUser,
+  ): IUserData => {
+    const { personal, contact, security, createdAt, updatedAt } = almaUser;
+
+    const { firstName, lastName, socialName, bornDate, motherName } = personal;
+    const { username, email, phone } = contact;
+    const { status } = security;
+
+    return {
+      id: userId,
+      name: `${firstName} ${lastName}`,
+      socialName,
+      bornDate,
+      motherName,
+      username,
+      email,
+      phone,
+      status,
+      createdAt,
+      updatedAt,
+    };
+  };
 
   async createUser(createUser: CreateUserDtoWithChannel): Promise<IUser> {
     const signUpPath: string = process.env.SIGNUP_PATH || '';
@@ -110,27 +137,7 @@ export class UserRepository implements IUserRepository {
         'get',
       );
 
-      const { id, name, created_at, updated_at } = user;
-      const { personal, contact, security } = almaUser;
-      const { socialName, bornDate, motherName } = personal;
-      const { username, email, phone } = contact;
-      const { status } = security;
-
-      const userResponse = {
-        id,
-        name,
-        socialName,
-        bornDate,
-        motherName,
-        username,
-        email,
-        phone,
-        status,
-        createdAt: created_at,
-        updatedAt: updated_at,
-      };
-
-      return userResponse;
+      return this.formatUserResponse(user.id, almaUser);
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
@@ -156,11 +163,7 @@ export class UserRepository implements IUserRepository {
         dataToUpdate,
       );
 
-      const { personal, contact, security, createdAt, updatedAt } = almaUser;
-      const { firstName, lastName, socialName, bornDate, motherName } =
-        personal;
-      const { username, email, phone } = contact;
-      const { status } = security;
+      const { firstName, lastName, socialName } = almaUser.personal;
 
       if (
         'firstName' in dataToUpdate ||
@@ -180,21 +183,7 @@ export class UserRepository implements IUserRepository {
         userId = user.id;
       }
 
-      const userResponse = {
-        id: userId,
-        name: `${firstName} ${lastName}`,
-        socialName,
-        bornDate,
-        motherName,
-        username,
-        email,
-        phone,
-        status,
-        createdAt,
-        updatedAt,
-      };
-
-      return userResponse;
+      return this.formatUserResponse(userId, almaUser);
     } catch (error) {
       const { status, message } = error || {};
 
@@ -206,6 +195,35 @@ export class UserRepository implements IUserRepository {
         'user-repository.findById',
         500,
         'could not update user',
+      );
+    }
+  };
+
+  deleteUser = async (
+    accessToken: string,
+    userAlmaId: string,
+  ): Promise<void> => {
+    const deleteUserPath: string = process.env.DELETE_USER_PATH || '';
+
+    try {
+      await this.almaRequest<IAlmaUser>(deleteUserPath, accessToken, 'delete');
+
+      await this.prisma.user.delete({
+        where: {
+          alma_id: userAlmaId,
+        },
+      });
+    } catch (error) {
+      const { status, message } = error || {};
+
+      if (error instanceof AppError) {
+        throw new AppError(status, 400, message);
+      }
+
+      throw new AppError(
+        'user-repository.findById',
+        500,
+        'could not delete user',
       );
     }
   };

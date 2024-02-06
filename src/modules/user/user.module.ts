@@ -4,9 +4,9 @@ import { UserRepository } from './repository/user.repository';
 import { UserController } from './user.controller';
 import { CreateUserService } from './services/create-user.service';
 
-import { UserService } from './services/user.service';
 import { FindUserService } from './services/find-user.service';
 import { UpdateUserService } from './services/update-user.service';
+import { DeleteUserService } from './services/delete-user.service';
 
 @Module({
   controllers: [UserController],
@@ -15,8 +15,8 @@ import { UpdateUserService } from './services/update-user.service';
     UserRepository,
     CreateUserService,
     FindUserService,
-    UserService,
     UpdateUserService,
+    DeleteUserService,
   ],
 })
 export class UserModule {}
