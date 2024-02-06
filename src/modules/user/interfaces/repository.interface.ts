@@ -3,6 +3,7 @@ import { IUser } from './user.interface';
 
 export interface IUserRepository {
   createUser(data: CreateUserDtoWithChannel): Promise<IUser>;
+  findById(userAlmaId: string, accessToken: string);
 }
 
 export interface IAlmaUser {

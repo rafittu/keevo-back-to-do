@@ -39,7 +39,7 @@ export class UserRepository implements IUserRepository {
   }
 
   async createUser(createUser: CreateUserDtoWithChannel): Promise<IUser> {
-    const signUpPath: string = process.env.SIGNUP_PATH;
+    const signUpPath: string = process.env.SIGNUP_PATH || '';
 
     try {
       const almaUser = await this.almaRequest<IAlmaUser>(
@@ -85,4 +85,54 @@ export class UserRepository implements IUserRepository {
       throw new AppError('user-repository.createUser', 500, 'user not created');
     }
   }
+
+  findById = async (userAlmaId: string, accessToken: string) => {
+    const getUserPath: string = process.env.GET_USER_PATH || '';
+
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          alma_id: userAlmaId,
+        },
+      });
+
+      if (!user) {
+        throw new AppError('user-repository.findById', 404, 'user not found');
+      }
+
+      const almaUser = await this.almaRequest<IAlmaUser>(
+        getUserPath,
+        accessToken,
+        'get',
+      );
+
+      const { id, name, created_at, updated_at } = user;
+      const { personal, contact, security } = almaUser;
+      const { socialName, bornDate, motherName } = personal;
+      const { username, email, phone } = contact;
+      const { status } = security;
+
+      const userResponse = {
+        id,
+        name,
+        socialName,
+        bornDate,
+        motherName,
+        username,
+        email,
+        phone,
+        status,
+        createdAt: created_at,
+        updatedAt: updated_at,
+      };
+
+      return userResponse;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      throw new AppError('user-repository.findById', 500, 'could not get user');
+    }
+  };
 }
