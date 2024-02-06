@@ -14,3 +14,9 @@ export const MockUserFromJwt: IUserFromJwt = {
   username: faker.internet.userName(),
   email: MockUserCredentials.email,
 };
+
+export const MockSignInAxiosResponse = {
+  data: {
+    accessToken: MockAccessToken,
+  },
+};
