@@ -10,7 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { FilterTaskDto } from './dto/filter-task.dto';
+import { TaskFilterDto } from './dto/filter-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { HttpExceptionFilter } from '../../common/filter/http-exception.filter';
 import { AppError } from '../../common/errors/Error';
@@ -39,7 +39,7 @@ export class TaskController {
   @Get('/filter')
   getByFilter(
     @CurrentUser() user: IUserFromJwt,
-    @Query() filterTaskDto: FilterTaskDto,
+    @Query() filterTaskDto: TaskFilterDto,
   ) {
     return this.getTaskByFilterService.execute(user, filterTaskDto);
   }

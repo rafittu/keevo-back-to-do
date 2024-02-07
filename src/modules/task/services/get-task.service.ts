@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TaskRepository } from '../repository/task.repository';
 import { ITaskRepository } from '../interfaces/repository.interface';
 import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
-import { FilterTaskDto } from '../dto/filter-task.dto';
+import { TaskFilterDto } from '../dto/filter-task.dto';
 
 @Injectable()
 export class GetTaskByFilterService {
@@ -11,7 +11,7 @@ export class GetTaskByFilterService {
     private taskRepository: ITaskRepository,
   ) {}
 
-  async execute(user: IUserFromJwt, filter: FilterTaskDto) {
+  async execute(user: IUserFromJwt, filter: TaskFilterDto) {
     const { almaId } = user;
 
     return await this.taskRepository.taskByFilter(almaId, filter);
