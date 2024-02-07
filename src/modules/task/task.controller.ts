@@ -6,17 +6,27 @@ import {
   Patch,
   Param,
   Delete,
+  UseFilters,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { HttpExceptionFilter } from '../../common/filter/http-exception.filter';
+import { AppError } from '../../common/errors/Error';
+import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
+import { IUserFromJwt } from '../auth/interfaces/auth.interface';
+import { CreateTaskService } from './services/create-task.service';
 
+@UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('task')
 export class TaskController {
-  constructor() {}
+  constructor(private readonly createTaskService: CreateTaskService) {}
 
-  @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return 'this.taskService.create(createTaskDto)';
+  @Post('/create')
+  create(
+    @CurrentUser() user: IUserFromJwt,
+    @Body() createTaskDto: CreateTaskDto,
+  ) {
+    return this.createTaskService.execute(user, createTaskDto);
   }
 
   @Get()
