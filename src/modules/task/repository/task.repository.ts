@@ -103,7 +103,6 @@ export class TaskRepository implements ITaskRepository {
 
       return formattedTasks;
     } catch (error) {
-      console.log(error);
       throw new AppError(
         'task-repository.findTaskByFilter',
         500,
