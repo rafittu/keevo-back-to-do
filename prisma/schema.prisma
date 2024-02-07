@@ -67,7 +67,7 @@ model Task {
 
 model Category {
   id         String     @id @unique @default(uuid()) @db.Uuid
-  name       Categories
+  name       Categories @unique
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt()
 
