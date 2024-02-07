@@ -40,6 +40,6 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsEnum(Categories, { each: true })
-  @IsString()
+  @IsString({ each: true })
   categories?: Categories[];
 }
