@@ -1,4 +1,4 @@
-import { Categories, TaskPriority, TaskStatus } from '@prisma/client';
+import { Categories, TaskPriority } from '@prisma/client';
 import {
   IsEnum,
   IsNotEmpty,
@@ -38,21 +38,8 @@ export class CreateTaskDto {
   })
   dueDate?: string;
 
-  @IsNotEmpty()
-  @IsEnum(TaskStatus, { each: true })
-  @IsString()
-  status: TaskStatus;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(10, { message: 'must be a valid date: yyyy-mm-dd' })
-  @Matches(new RegExp(dateRegexPattern), {
-    message: 'must be a valid date and formatted as yyyy-mm-dd',
-  })
-  completedAt?: string;
-
   @IsOptional()
   @IsEnum(Categories, { each: true })
   @IsString()
-  category?: Categories;
+  categories?: Categories[];
 }
