@@ -3,8 +3,9 @@ import { PrismaService } from '../../../prisma.service';
 import { AppError } from '../../../common/errors/Error';
 import { ITaskRepository } from '../interfaces/repository.interface';
 import { CreateTaskDto } from '../dto/create-task.dto';
-import { TaskStatus } from '@prisma/client';
+import { Prisma, TaskStatus } from '@prisma/client';
 import { ITask } from '../interfaces/task.interface';
+import { TaskFilterDto } from '../dto/filter-task.dto';
 
 @Injectable()
 export class TaskRepository implements ITaskRepository {
@@ -53,6 +54,60 @@ export class TaskRepository implements ITaskRepository {
         'task-repository.createTask',
         500,
         'internal server error',
+      );
+    }
+  }
+
+  async taskByFilter(almaId: string, filter: TaskFilterDto) {
+    const { priority, dueDate, categories, status, completedAt } = filter;
+
+    try {
+      const taskWhereQuery: Prisma.TaskWhereInput = {
+        user: { alma_id: almaId },
+        ...(priority && { priority }),
+        ...(dueDate && { due_date: new Date(dueDate) }),
+        ...(status && typeof status === 'string'
+          ? { status: { equals: status } }
+          : { status: { in: status } }),
+        ...(completedAt && { completed_at: new Date(completedAt) }),
+        ...(categories
+          ? {
+              taskCategory: {
+                some: {
+                  category: {
+                    name: {
+                      in: Array.isArray(categories) ? categories : [categories],
+                    },
+                  },
+                },
+              },
+            }
+          : {}),
+      };
+
+      const tasks = await this.prisma.task.findMany({
+        where: taskWhereQuery,
+        include: {
+          taskCategory: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      });
+
+      const formattedTasks = tasks.map((task) => ({
+        ...task,
+        taskCategory: task.taskCategory.map((tc) => tc.category.name),
+      }));
+
+      return formattedTasks;
+    } catch (error) {
+      console.log(error);
+      throw new AppError(
+        'task-repository.findTaskByFilter',
+        500,
+        'failed to fetch tasks by filter',
       );
     }
   }
