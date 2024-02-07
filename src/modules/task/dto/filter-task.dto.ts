@@ -13,7 +13,7 @@ const dateRegexPattern =
 export class TaskFilterDto {
   @IsOptional()
   @IsEnum(TaskPriority, { each: true })
-  @IsString()
+  @IsString({ each: true })
   priority?: TaskPriority;
 
   @IsOptional()
