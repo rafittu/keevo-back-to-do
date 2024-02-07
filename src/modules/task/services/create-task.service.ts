@@ -5,6 +5,7 @@ import { AppError } from '../../../common/errors/Error';
 import { IUserFromJwt } from '../../../modules/auth/interfaces/auth.interface';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { TaskStatus } from '@prisma/client';
+import { ITask } from '../interfaces/task.interface';
 
 @Injectable()
 export class CreateTaskService {
@@ -13,7 +14,7 @@ export class CreateTaskService {
     private taskRepository: ITaskRepository,
   ) {}
 
-  async execute(user: IUserFromJwt, task: CreateTaskDto) {
+  async execute(user: IUserFromJwt, task: CreateTaskDto): Promise<ITask> {
     const { almaId } = user;
 
     try {

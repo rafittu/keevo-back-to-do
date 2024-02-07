@@ -15,6 +15,7 @@ import { AppError } from '../../common/errors/Error';
 import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
 import { IUserFromJwt } from '../auth/interfaces/auth.interface';
 import { CreateTaskService } from './services/create-task.service';
+import { ITask } from './interfaces/task.interface';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('task')
@@ -25,7 +26,7 @@ export class TaskController {
   create(
     @CurrentUser() user: IUserFromJwt,
     @Body() createTaskDto: CreateTaskDto,
-  ) {
+  ): Promise<ITask> {
     return this.createTaskService.execute(user, createTaskDto);
   }
 

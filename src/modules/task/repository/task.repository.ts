@@ -4,12 +4,17 @@ import { AppError } from '../../../common/errors/Error';
 import { ITaskRepository } from '../interfaces/repository.interface';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { TaskStatus } from '@prisma/client';
+import { ITask } from '../interfaces/task.interface';
 
 @Injectable()
 export class TaskRepository implements ITaskRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createTask(almaId: string, task: CreateTaskDto, status: TaskStatus) {
+  async createTask(
+    almaId: string,
+    task: CreateTaskDto,
+    status: TaskStatus,
+  ): Promise<ITask> {
     const { title, description, priority, dueDate, categories } = task;
 
     try {
@@ -31,7 +36,18 @@ export class TaskRepository implements ITaskRepository {
         },
       });
 
-      return createdTask;
+      const { id, created_at } = createdTask;
+
+      return {
+        id,
+        title,
+        description,
+        priority,
+        dueDate,
+        status,
+        categories,
+        createdAt: created_at,
+      };
     } catch (error) {
       throw new AppError(
         'task-repository.createTask',
