@@ -211,4 +211,44 @@ export class TaskRepository implements ITaskRepository {
       );
     }
   }
+
+  async deleteTask(almaId: string, taskId: string): Promise<ITaskData> {
+    try {
+      await this.prisma.taskCategory.deleteMany({
+        where: {
+          task_id: taskId,
+          task: {
+            user: {
+              alma_id: almaId,
+            },
+          },
+        },
+      });
+
+      const deletedTask = await this.prisma.task.delete({
+        where: {
+          id: taskId,
+          user: {
+            alma_id: almaId,
+          },
+        },
+      });
+
+      return this.formatTask(deletedTask);
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new AppError(
+          'task-repository.deleteTask',
+          500,
+          'task to delete does not exist',
+        );
+      }
+
+      throw new AppError(
+        'task-repository.deleteTask',
+        500,
+        'failed to delete task',
+      );
+    }
+  }
 }

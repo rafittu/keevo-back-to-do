@@ -16,4 +16,5 @@ export interface ITaskRepository {
     taskId: string,
     updateTaskDto: UpdateTaskDto,
   ): Promise<ITaskData>;
+  deleteTask(almaId: string, taskId: string);
 }
