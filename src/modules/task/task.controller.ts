@@ -20,6 +20,7 @@ import { CreateTaskService } from './services/create-task.service';
 import { ITask, ITaskData } from './interfaces/task.interface';
 import { GetTaskByFilterService } from './services/get-task.service';
 import { UpdateTaskService } from './services/update-task.service';
+import { DeleteTaskService } from './services/delete-task.service';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('task')
@@ -28,6 +29,7 @@ export class TaskController {
     private readonly createTaskService: CreateTaskService,
     private readonly getTaskByFilterService: GetTaskByFilterService,
     private readonly updateTaskService: UpdateTaskService,
+    private readonly deleteTaskService: DeleteTaskService,
   ) {}
 
   @Post('/create')
@@ -55,8 +57,8 @@ export class TaskController {
     return this.updateTaskService.execute(user, id, updateTaskDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return 'this.taskService.remove(+id)';
+  @Delete('/delete/:id')
+  remove(@CurrentUser() user: IUserFromJwt, @Param('id') id: string) {
+    return this.deleteTaskService.execute(user, id);
   }
 }
