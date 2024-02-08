@@ -59,11 +59,13 @@ export class TaskRepository implements ITaskRepository {
   }
 
   async taskByFilter(almaId: string, filter: TaskFilterDto) {
-    const { priority, dueDate, categories, status, completedAt } = filter;
+    const { taskId, priority, dueDate, categories, status, completedAt } =
+      filter;
 
     try {
       const taskWhereQuery: Prisma.TaskWhereInput = {
         user: { alma_id: almaId },
+        ...(taskId && { id: taskId }),
         ...(priority && { priority }),
         ...(dueDate && { due_date: new Date(dueDate) }),
         ...(status && typeof status === 'string'
