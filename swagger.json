@@ -739,6 +739,93 @@
             }
           }
         }
+      },
+
+      "task/create": {
+        "post": {
+          "summary": "Create task",
+          "description": "Endpoint to create new task",
+          "tags": ["Task"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTask"
+                },
+                "example": {
+                  "title": "App To-do",
+                  "description": "Develop front-end app",
+                  "priority": "URGENT",
+                  "dueDate": "2024-02-14",
+                  "categories": ["WORK", "PROJECTS"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Task created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Task"
+                  },
+                  "example": {
+                    "id": "cds66-s88-cds5-ngy4f-142ca1e",
+                    "title": "App To-do",
+                    "description": "Develop front-end app",
+                    "priority": "URGENT",
+                    "dueDate": "2024-02-14",
+                    "status": "TODO",
+                    "createdAt": "2024-02-08T22:24:28.296Z"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "email or password is invalid",
+                      "code": "local-auth.guards",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "internal server error",
+                      "code": "task-repository.createTask",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
 
@@ -972,6 +1059,110 @@
               "accessToken": {
                 "type": "string",
                 "description": "Access token used for authentication in subsequent API calls. This token should be included in the 'Authorization' header as a Bearer Token"
+              }
+            }
+          },
+          "CreateTask": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              }
+            },
+            "required": [
+              "title",
+              "description"
+            ]
+          },
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Task identification"
+              },
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "TODO",
+                  "DOING",
+                  "HOLD",
+                  "DONE"
+                ],
+                "description": "Task status"
               }
             }
           },
