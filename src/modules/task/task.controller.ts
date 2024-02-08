@@ -7,20 +7,26 @@ import {
   Param,
   Delete,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { TaskFilterDto } from './dto/filter-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { HttpExceptionFilter } from '../../common/filter/http-exception.filter';
 import { AppError } from '../../common/errors/Error';
 import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
 import { IUserFromJwt } from '../auth/interfaces/auth.interface';
 import { CreateTaskService } from './services/create-task.service';
-import { ITask } from './interfaces/task.interface';
+import { ITask, ITaskData } from './interfaces/task.interface';
+import { GetTaskByFilterService } from './services/get-task.service';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('task')
 export class TaskController {
-  constructor(private readonly createTaskService: CreateTaskService) {}
+  constructor(
+    private readonly createTaskService: CreateTaskService,
+    private readonly getTaskByFilterService: GetTaskByFilterService,
+  ) {}
 
   @Post('/create')
   create(
@@ -30,9 +36,12 @@ export class TaskController {
     return this.createTaskService.execute(user, createTaskDto);
   }
 
-  @Get()
-  findAll() {
-    return 'this.taskService.findAll()';
+  @Get('/filter')
+  getByFilter(
+    @CurrentUser() user: IUserFromJwt,
+    @Query() filterTaskDto: TaskFilterDto,
+  ): Promise<ITaskData | ITaskData[]> {
+    return this.getTaskByFilterService.execute(user, filterTaskDto);
   }
 
   @Get(':id')
