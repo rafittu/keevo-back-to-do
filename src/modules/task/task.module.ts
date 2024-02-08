@@ -4,6 +4,7 @@ import { PrismaService } from '../../prisma.service';
 import { TaskRepository } from './repository/task.repository';
 import { CreateTaskService } from './services/create-task.service';
 import { GetTaskByFilterService } from './services/get-task.service';
+import { UpdateTaskService } from './services/update-task.service';
 
 @Module({
   controllers: [TaskController],
@@ -12,6 +13,7 @@ import { GetTaskByFilterService } from './services/get-task.service';
     TaskRepository,
     CreateTaskService,
     GetTaskByFilterService,
+    UpdateTaskService,
   ],
 })
 export class TaskModule {}
