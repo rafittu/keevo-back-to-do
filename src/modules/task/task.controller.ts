@@ -19,6 +19,7 @@ import { IUserFromJwt } from '../auth/interfaces/auth.interface';
 import { CreateTaskService } from './services/create-task.service';
 import { ITask, ITaskData } from './interfaces/task.interface';
 import { GetTaskByFilterService } from './services/get-task.service';
+import { UpdateTaskService } from './services/update-task.service';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
 @Controller('task')
@@ -26,6 +27,7 @@ export class TaskController {
   constructor(
     private readonly createTaskService: CreateTaskService,
     private readonly getTaskByFilterService: GetTaskByFilterService,
+    private readonly updateTaskService: UpdateTaskService,
   ) {}
 
   @Post('/create')
@@ -40,18 +42,17 @@ export class TaskController {
   getByFilter(
     @CurrentUser() user: IUserFromJwt,
     @Query() filterTaskDto: TaskFilterDto,
-  ): Promise<ITaskData | ITaskData[]> {
+  ): Promise<ITaskData[]> {
     return this.getTaskByFilterService.execute(user, filterTaskDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return 'this.taskService.findOne(+id)';
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return 'this.taskService.update(+id, updateTaskDto)';
+  @Patch('/update/:id')
+  update(
+    @CurrentUser() user: IUserFromJwt,
+    @Param('id') id: string,
+    @Body() updateTaskDto: UpdateTaskDto,
+  ): Promise<ITaskData> {
+    return this.updateTaskService.execute(user, id, updateTaskDto);
   }
 
   @Delete(':id')

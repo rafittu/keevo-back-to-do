@@ -6,6 +6,7 @@ import { CreateTaskDto } from '../dto/create-task.dto';
 import { Prisma, TaskStatus } from '@prisma/client';
 import { ITask, ITaskData } from '../interfaces/task.interface';
 import { TaskFilterDto } from '../dto/filter-task.dto';
+import { UpdateTaskDto } from '../dto/update-task.dto';
 
 @Injectable()
 export class TaskRepository implements ITaskRepository {
@@ -21,18 +22,14 @@ export class TaskRepository implements ITaskRepository {
       dueDate: task.due_date,
       status: task.status,
       completedAt: task.completed_at,
-      taskCategories: task.taskCategory,
+      categories: task.taskCategory,
       createdAt: task.created_at,
       updatedAt: task.updated_at,
     };
   }
 
-  private returnFormattedTask(data: any): ITaskData | ITaskData[] {
-    if (Array.isArray(data)) {
-      return data.map((task) => this.formatTask(task));
-    } else {
-      return this.formatTask(data);
-    }
+  private formatManyTasks(data: any): ITaskData[] {
+    return data.map((task) => this.formatTask(task));
   }
 
   async createTask(
@@ -85,7 +82,7 @@ export class TaskRepository implements ITaskRepository {
   async taskByFilter(
     almaId: string,
     filter: TaskFilterDto,
-  ): Promise<ITaskData | ITaskData[]> {
+  ): Promise<ITaskData[]> {
     const { taskId, priority, dueDate, categories, status, completedAt } =
       filter;
 
@@ -130,12 +127,87 @@ export class TaskRepository implements ITaskRepository {
         taskCategory: task.taskCategory.map((tc) => tc.category.name),
       }));
 
-      return this.returnFormattedTask(formattedTasks);
+      return this.formatManyTasks(formattedTasks);
     } catch (error) {
       throw new AppError(
         'task-repository.findTaskByFilter',
         500,
         'failed to fetch tasks by filter',
+      );
+    }
+  }
+
+  async updateTask(
+    almaId: string,
+    taskId: string,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<ITaskData> {
+    const {
+      title,
+      description,
+      priority,
+      dueDate,
+      completedAt,
+      status,
+      categories,
+    } = updateTaskDto;
+
+    try {
+      if (categories) {
+        await this.prisma.taskCategory.deleteMany({
+          where: {
+            task: {
+              user: {
+                alma_id: almaId,
+              },
+            },
+            task_id: taskId,
+          },
+        });
+      }
+
+      const taskCategoryData = (categories || []).map((categoryName) => ({
+        category: { connect: { name: categoryName } },
+      }));
+
+      const updatedTask = await this.prisma.task.update({
+        where: {
+          id: taskId,
+          user: {
+            alma_id: almaId,
+          },
+        },
+        data: {
+          title,
+          description,
+          priority,
+          due_date: dueDate ? new Date(dueDate) : undefined,
+          completed_at: completedAt ? new Date(completedAt) : undefined,
+          status,
+          taskCategory: {
+            create: taskCategoryData,
+          },
+        },
+        include: {
+          taskCategory: {
+            include: {
+              category: true,
+            },
+          },
+        },
+      });
+
+      const formatTaskCategory = {
+        ...updatedTask,
+        taskCategory: updatedTask.taskCategory.map((tc) => tc.category.name),
+      };
+
+      return this.formatTask(formatTaskCategory);
+    } catch (error) {
+      throw new AppError(
+        'task-repository.updateTask',
+        500,
+        'failed to update task',
       );
     }
   }

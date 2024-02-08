@@ -18,7 +18,7 @@ export interface ITaskData {
   description: string;
   priority: string;
   dueDate: Date;
-  taskCategories: string[];
+  categories: string[];
   status: string;
   completedAt: Date;
   createdAt: Date;

@@ -2,11 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TaskRepository } from '../repository/task.repository';
 import { ITaskRepository } from '../interfaces/repository.interface';
 import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
-import { TaskFilterDto } from '../dto/filter-task.dto';
+import { UpdateTaskDto } from '../dto/update-task.dto';
+import { TaskStatus } from '@prisma/client';
 import { ITaskData } from '../interfaces/task.interface';
 
 @Injectable()
-export class GetTaskByFilterService {
+export class UpdateTaskService {
   constructor(
     @Inject(TaskRepository)
     private taskRepository: ITaskRepository,
@@ -14,10 +15,15 @@ export class GetTaskByFilterService {
 
   async execute(
     user: IUserFromJwt,
-    filter: TaskFilterDto,
-  ): Promise<ITaskData[]> {
+    taskId: string,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<ITaskData> {
     const { almaId } = user;
 
-    return await this.taskRepository.taskByFilter(almaId, filter);
+    if (updateTaskDto.status && updateTaskDto.status === TaskStatus.DONE) {
+      updateTaskDto.completedAt = new Date().toISOString();
+    }
+
+    return await this.taskRepository.updateTask(almaId, taskId, updateTaskDto);
   }
 }
