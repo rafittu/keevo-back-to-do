@@ -46,7 +46,7 @@ export class TaskController {
     return this.getTaskByFilterService.execute(user, filterTaskDto);
   }
 
-  @Patch('/update')
+  @Patch('/update/:id')
   update(
     @CurrentUser() user: IUserFromJwt,
     @Param('id') id: string,
