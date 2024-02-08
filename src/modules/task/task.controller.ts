@@ -17,7 +17,7 @@ import { AppError } from '../../common/errors/Error';
 import { CurrentUser } from '../auth/infra/decorators/current-user.decorator';
 import { IUserFromJwt } from '../auth/interfaces/auth.interface';
 import { CreateTaskService } from './services/create-task.service';
-import { ITask } from './interfaces/task.interface';
+import { ITask, ITaskData } from './interfaces/task.interface';
 import { GetTaskByFilterService } from './services/get-task.service';
 
 @UseFilters(new HttpExceptionFilter(new AppError()))
@@ -40,7 +40,7 @@ export class TaskController {
   getByFilter(
     @CurrentUser() user: IUserFromJwt,
     @Query() filterTaskDto: TaskFilterDto,
-  ) {
+  ): Promise<ITaskData | ITaskData[]> {
     return this.getTaskByFilterService.execute(user, filterTaskDto);
   }
 

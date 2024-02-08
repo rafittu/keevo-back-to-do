@@ -4,12 +4,36 @@ import { AppError } from '../../../common/errors/Error';
 import { ITaskRepository } from '../interfaces/repository.interface';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { Prisma, TaskStatus } from '@prisma/client';
-import { ITask } from '../interfaces/task.interface';
+import { ITask, ITaskData } from '../interfaces/task.interface';
 import { TaskFilterDto } from '../dto/filter-task.dto';
 
 @Injectable()
 export class TaskRepository implements ITaskRepository {
   constructor(private prisma: PrismaService) {}
+
+  private formatTask(task: any): ITaskData {
+    return {
+      taskId: task.id,
+      userId: task.user_id,
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      dueDate: task.due_date,
+      status: task.status,
+      completedAt: task.completed_at,
+      taskCategories: task.taskCategory,
+      createdAt: task.created_at,
+      updatedAt: task.updated_at,
+    };
+  }
+
+  private returnFormattedTask(data: any): ITaskData | ITaskData[] {
+    if (Array.isArray(data)) {
+      return data.map((task) => this.formatTask(task));
+    } else {
+      return this.formatTask(data);
+    }
+  }
 
   async createTask(
     almaId: string,
@@ -58,7 +82,10 @@ export class TaskRepository implements ITaskRepository {
     }
   }
 
-  async taskByFilter(almaId: string, filter: TaskFilterDto) {
+  async taskByFilter(
+    almaId: string,
+    filter: TaskFilterDto,
+  ): Promise<ITaskData | ITaskData[]> {
     const { taskId, priority, dueDate, categories, status, completedAt } =
       filter;
 
@@ -103,7 +130,7 @@ export class TaskRepository implements ITaskRepository {
         taskCategory: task.taskCategory.map((tc) => tc.category.name),
       }));
 
-      return formattedTasks;
+      return this.returnFormattedTask(formattedTasks);
     } catch (error) {
       throw new AppError(
         'task-repository.findTaskByFilter',

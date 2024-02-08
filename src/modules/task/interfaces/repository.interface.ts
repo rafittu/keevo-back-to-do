@@ -1,6 +1,6 @@
 import { TaskStatus } from '@prisma/client';
 import { CreateTaskDto } from '../dto/create-task.dto';
-import { ITask } from './task.interface';
+import { ITask, ITaskData } from './task.interface';
 import { TaskFilterDto } from '../dto/filter-task.dto';
 
 export interface ITaskRepository {
@@ -9,5 +9,8 @@ export interface ITaskRepository {
     task: CreateTaskDto,
     status: TaskStatus,
   ): Promise<ITask>;
-  taskByFilter(almaId: string, filter: TaskFilterDto);
+  taskByFilter(
+    almaId: string,
+    filter: TaskFilterDto,
+  ): Promise<ITaskData | ITaskData[]>;
 }

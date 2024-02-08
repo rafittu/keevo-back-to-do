@@ -10,3 +10,17 @@ export interface ITask {
   categories?: Categories[];
   createdAt: Date;
 }
+
+export interface ITaskData {
+  taskId: string;
+  userId: string;
+  title: string;
+  description: string;
+  priority: string;
+  dueDate: Date;
+  taskCategories: string[];
+  status: string;
+  completedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
