@@ -44,14 +44,13 @@ export class TaskController {
     return this.getTaskByFilterService.execute(user, filterTaskDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return 'this.taskService.findOne(+id)';
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return 'this.taskService.update(+id, updateTaskDto)';
+  @Patch('/update')
+  update(
+    @CurrentUser() user: IUserFromJwt,
+    @Param('id') id: string,
+    @Body() updateTaskDto: UpdateTaskDto,
+  ) {
+    return this.taskService.update(+id, updateTaskDto);
   }
 
   @Delete(':id')
