@@ -10,9 +10,10 @@ export interface ITaskRepository {
     task: CreateTaskDto,
     status: TaskStatus,
   ): Promise<ITask>;
-  taskByFilter(
+  taskByFilter(almaId: string, filter: TaskFilterDto): Promise<ITaskData[]>;
+  updateTask(
     almaId: string,
-    filter: TaskFilterDto,
-  ): Promise<ITaskData | ITaskData[]>;
-  updateTask(almaId: string, taskId: string, updateTaskDto: UpdateTaskDto);
+    taskId: string,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<ITaskData>;
 }

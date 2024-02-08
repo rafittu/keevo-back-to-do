@@ -42,7 +42,7 @@ export class TaskController {
   getByFilter(
     @CurrentUser() user: IUserFromJwt,
     @Query() filterTaskDto: TaskFilterDto,
-  ): Promise<ITaskData | ITaskData[]> {
+  ): Promise<ITaskData[]> {
     return this.getTaskByFilterService.execute(user, filterTaskDto);
   }
 
@@ -51,7 +51,7 @@ export class TaskController {
     @CurrentUser() user: IUserFromJwt,
     @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
-  ) {
+  ): Promise<ITaskData> {
     return this.updateTaskService.execute(user, id, updateTaskDto);
   }
 

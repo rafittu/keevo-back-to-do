@@ -22,18 +22,14 @@ export class TaskRepository implements ITaskRepository {
       dueDate: task.due_date,
       status: task.status,
       completedAt: task.completed_at,
-      taskCategories: task.taskCategory,
+      categories: task.taskCategory,
       createdAt: task.created_at,
       updatedAt: task.updated_at,
     };
   }
 
-  private returnFormattedTask(data: any): ITaskData | ITaskData[] {
-    if (Array.isArray(data)) {
-      return data.map((task) => this.formatTask(task));
-    } else {
-      return this.formatTask(data);
-    }
+  private formatManyTasks(data: any): ITaskData[] {
+    return data.map((task) => this.formatTask(task));
   }
 
   async createTask(
@@ -86,7 +82,7 @@ export class TaskRepository implements ITaskRepository {
   async taskByFilter(
     almaId: string,
     filter: TaskFilterDto,
-  ): Promise<ITaskData | ITaskData[]> {
+  ): Promise<ITaskData[]> {
     const { taskId, priority, dueDate, categories, status, completedAt } =
       filter;
 
@@ -131,7 +127,7 @@ export class TaskRepository implements ITaskRepository {
         taskCategory: task.taskCategory.map((tc) => tc.category.name),
       }));
 
-      return this.returnFormattedTask(formattedTasks);
+      return this.formatManyTasks(formattedTasks);
     } catch (error) {
       throw new AppError(
         'task-repository.findTaskByFilter',

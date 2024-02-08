@@ -4,6 +4,7 @@ import { ITaskRepository } from '../interfaces/repository.interface';
 import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskStatus } from '@prisma/client';
+import { ITaskData } from '../interfaces/task.interface';
 
 @Injectable()
 export class UpdateTaskService {
@@ -16,7 +17,7 @@ export class UpdateTaskService {
     user: IUserFromJwt,
     taskId: string,
     updateTaskDto: UpdateTaskDto,
-  ) {
+  ): Promise<ITaskData> {
     const { almaId } = user;
 
     if (updateTaskDto.status && updateTaskDto.status === TaskStatus.DONE) {

@@ -15,7 +15,7 @@ export class GetTaskByFilterService {
   async execute(
     user: IUserFromJwt,
     filter: TaskFilterDto,
-  ): Promise<ITaskData | ITaskData[]> {
+  ): Promise<ITaskData[]> {
     const { almaId } = user;
 
     return await this.taskRepository.taskByFilter(almaId, filter);
