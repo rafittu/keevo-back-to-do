@@ -5,6 +5,7 @@ import { TaskRepository } from './repository/task.repository';
 import { CreateTaskService } from './services/create-task.service';
 import { GetTaskByFilterService } from './services/get-task.service';
 import { UpdateTaskService } from './services/update-task.service';
+import { DeleteTaskService } from './services/delete-task.service';
 
 @Module({
   controllers: [TaskController],
@@ -14,6 +15,7 @@ import { UpdateTaskService } from './services/update-task.service';
     CreateTaskService,
     GetTaskByFilterService,
     UpdateTaskService,
+    DeleteTaskService,
   ],
 })
 export class TaskModule {}
