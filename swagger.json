@@ -921,6 +921,150 @@
             }
           }
         }
+      },
+      "/task/update/:id": {
+        "patch": {
+          "summary": "Update task",
+          "description": "Route to update task",
+          "tags": ["Task"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "description": "task id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTask"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example of updating task description",
+                    "value": {
+                      "description": "Develop front-end app using React framework"
+                    }
+                  },
+                  "example2": {
+                    "summary": "Example of updating task categories",
+                    "value": {
+                      "categories": ["PERSONAL", "WORK", "PROJECTS"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Task data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskData"
+                  },
+                  "example": [{
+                    "taskId": "j0rb-rr3-09d-d9s-4ds9cs9",
+                    "userId": "cds66-s88-cds5-ngy4f-142ca1e",
+                    "title": "App To-do",
+                    "description": "Develop front-end app using React framework",
+                    "priority": "URGENT",
+                    "dueDate": "2024-02-14T00:00:00.000Z",
+                    "status": "TODO",
+                    "categories": ["PERSONAL", "WORK", "PROJECTS"],
+                    "createdAt": "2024-02-08T22:24:28.296Z",
+                    "updatedAt": "2024-02-10T12:00:00Z"
+                  }]
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "invalid user id",
+                      "value": {
+                        "error": {
+                          "message": ["task id not found"],
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "failed to update task",
+                          "code": "task-repository.updateTask",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
 
@@ -1258,6 +1402,10 @@
                   "DONE"
                 ],
                 "description": "Task status"
+              },
+              "createdAt": {
+                "type": "string",
+                "description": "Date that task was created"
               }
             }
           },
@@ -1310,6 +1458,136 @@
               "completedAt": {
                 "type": "string",
                 "description": "Date that task was finished"
+              }
+            }
+          },
+          "TaskData": {
+            "type": "array",
+            "properties": {
+              "taskId": {
+                "type": "string",
+                "description": "Task identification"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User identification"
+              },
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "TODO",
+                  "DOING",
+                  "HOLD",
+                  "DONE"
+                ],
+                "description": "Task status"
+              },
+              "completedAt": {
+                "type": "string",
+                "description": "Date that task was marked as finished"
+              },
+              "createdAt": {
+                "type": "string",
+                "description": "Date that task was created"
+              },
+              "updatedAt": {
+                "type": "string",
+                "description": "Date that task was updated"
+              }
+            }
+          },
+          "UpdateTask": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              },
+              "completedAt": {
+                "type": "string",
+                "description": "Date that task was marked as finished"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "TODO",
+                  "DOING",
+                  "HOLD",
+                  "DONE"
+                ],
+                "description": "Task status"
               }
             }
           },
