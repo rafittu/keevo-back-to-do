@@ -58,7 +58,10 @@ export class TaskController {
   }
 
   @Delete('/delete/:id')
-  remove(@CurrentUser() user: IUserFromJwt, @Param('id') id: string) {
+  remove(
+    @CurrentUser() user: IUserFromJwt,
+    @Param('id') id: string,
+  ): Promise<ITaskData> {
     return this.deleteTaskService.execute(user, id);
   }
 }
