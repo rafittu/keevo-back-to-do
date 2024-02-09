@@ -1065,6 +1065,95 @@
             }
           }
         }
+      },
+      "/task/delete/:id": {
+        "delete": {
+          "summary": "Delete task",
+          "description": "Route to delete task",
+          "tags": ["Task"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "description": "task id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Task data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskData"
+                  },
+                  "example": {
+                    "taskId": "j0rb-rr3-09d-d9s-4ds9cs9",
+                    "userId": "cds66-s88-cds5-ngy4f-142ca1e",
+                    "title": "App To-do",
+                    "description": "Develop front-end app using React framework",
+                    "priority": "URGENT",
+                    "dueDate": "2024-02-14T00:00:00.000Z",
+                    "status": "TODO",
+                    "createdAt": "2024-02-08T22:24:28.296Z",
+                    "updatedAt": "2024-02-10T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "failed to delete task",
+                          "code": "task-repository.deleteTask",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "task to delete does not exist",
+                          "code": "task-repository.deleteTask",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
 
