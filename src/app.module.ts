@@ -5,6 +5,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import * as Joi from 'joi';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/infra/guards/jwt-auth.guard';
+import { TaskModule } from './modules/task/task.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { JwtAuthGuard } from './modules/auth/infra/guards/jwt-auth.guard';
     }),
     UserModule,
     AuthModule,
+    TaskModule,
   ],
   controllers: [],
   providers: [

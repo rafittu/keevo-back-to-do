@@ -208,6 +208,24 @@ export class UserRepository implements IUserRepository {
     try {
       await this.almaRequest<IAlmaUser>(deleteUserPath, accessToken, 'delete');
 
+      await this.prisma.taskCategory.deleteMany({
+        where: {
+          task: {
+            user: {
+              alma_id: userAlmaId,
+            },
+          },
+        },
+      });
+
+      await this.prisma.task.deleteMany({
+        where: {
+          user: {
+            alma_id: userAlmaId,
+          },
+        },
+      });
+
       await this.prisma.user.delete({
         where: {
           alma_id: userAlmaId,
