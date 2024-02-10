@@ -5,6 +5,7 @@ import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskStatus } from '@prisma/client';
 import { ITaskData } from '../interfaces/task.interface';
+import { AppError } from 'src/common/errors/Error';
 
 @Injectable()
 export class UpdateTaskService {
@@ -19,6 +20,14 @@ export class UpdateTaskService {
     updateTaskDto: UpdateTaskDto,
   ): Promise<ITaskData> {
     const { almaId } = user;
+
+    if (!taskId) {
+      throw new AppError(
+        'task-service.updateTask',
+        400,
+        'missing task id parameter',
+      );
+    }
 
     if (updateTaskDto.status && updateTaskDto.status === TaskStatus.DONE) {
       updateTaskDto.completedAt = new Date().toISOString();

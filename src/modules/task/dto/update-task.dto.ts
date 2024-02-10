@@ -34,9 +34,6 @@ export class UpdateTaskDto extends PartialType(CreateTaskDto) {
   @IsOptional()
   @IsString()
   @MaxLength(10, { message: 'must be a valid date: yyyy-mm-dd' })
-  @Matches(new RegExp(dateRegexPattern), {
-    message: 'must be a valid date and formatted as yyyy-mm-dd',
-  })
   dueDate?: string;
 
   @IsOptional()
