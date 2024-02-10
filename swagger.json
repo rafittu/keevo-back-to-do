@@ -1017,6 +1017,17 @@
                         },
                         "data": {}
                       }
+                    },
+                    "example2": {
+                      "summary": "invalid or missing task id",
+                      "value": {
+                        "error": {
+                          "message": "missing task id parameter",
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
                     }
                   }
                 }
