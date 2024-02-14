@@ -132,7 +132,7 @@ describe('UserRepository', () => {
     });
   });
 
-  describe('update', () => {
+  describe('update task', () => {
     it('should update task successfully', async () => {
       jest
         .spyOn(prismaService.taskCategory, 'deleteMany')
@@ -183,6 +183,68 @@ describe('UserRepository', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(500);
         expect(error.message).toBe('failed to update task');
+      }
+    });
+  });
+
+  describe('delete task', () => {
+    it('should delete task successfully', async () => {
+      jest
+        .spyOn(prismaService.taskCategory, 'deleteMany')
+        .mockResolvedValueOnce(null);
+
+      jest
+        .spyOn(prismaService.task, 'delete')
+        .mockResolvedValueOnce(MockPrismaTask);
+
+      const result = await taskRepository.deleteTask(
+        MockUserFromJwt.almaId,
+        MockTask.id,
+      );
+
+      const MockResult = {
+        ...result,
+        categories: MockTaskData.categories,
+      };
+
+      expect(prismaService.taskCategory.deleteMany).toHaveBeenCalledTimes(1);
+      expect(prismaService.task.delete).toHaveBeenCalledTimes(1);
+      expect(MockResult).toEqual(MockTaskData);
+    });
+
+    it('should throw an AppError for PrismaClientKnownRequestError', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError(
+        'error message',
+        {
+          code: 'P2025',
+          clientVersion: '',
+        },
+      );
+
+      jest
+        .spyOn(prismaService.taskCategory, 'deleteMany')
+        .mockRejectedValueOnce(prismaError);
+
+      try {
+        await taskRepository.deleteTask(MockUserFromJwt.almaId, MockTask.id);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('task to delete does not exist');
+      }
+    });
+
+    it('should throw an AppError', async () => {
+      jest
+        .spyOn(prismaService.taskCategory, 'deleteMany')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        await taskRepository.deleteTask(MockUserFromJwt.almaId, MockTask.id);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('failed to delete task');
       }
     });
   });
