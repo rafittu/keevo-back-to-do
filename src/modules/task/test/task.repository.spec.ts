@@ -75,7 +75,7 @@ describe('UserRepository', () => {
       expect(result).toEqual(MockTask);
     });
 
-    it('should throw an AppError when almaRequest throws an error', async () => {
+    it('should throw an AppError', async () => {
       jest
         .spyOn(prismaService.task, 'create')
         .mockRejectedValueOnce(new Error());
@@ -94,7 +94,7 @@ describe('UserRepository', () => {
     });
   });
 
-  describe('find one', () => {
+  describe('find task by filter', () => {
     it('should find tasks by filter', async () => {
       jest
         .spyOn(prismaService.task, 'findMany')
@@ -114,30 +114,21 @@ describe('UserRepository', () => {
       expect([MockResult]).toEqual([MockTaskData]);
     });
 
-    // it('should throw a not found error', async () => {
-    //   jest.spyOn(prismaService.user, 'findFirst').mockResolvedValueOnce(null);
+    it('should throw an AppError', async () => {
+      jest
+        .spyOn(prismaService.task, 'findMany')
+        .mockRejectedValueOnce(new Error());
 
-    //   try {
-    //     await userRepository.findById(MockUserFromJwt.almaId, MockAccessToken);
-    //   } catch (error) {
-    //     expect(error).toBeInstanceOf(AppError);
-    //     expect(error.code).toBe(404);
-    //     expect(error.message).toBe('user not found');
-    //   }
-    // });
-
-    // it('should throw an internal error', async () => {
-    //   jest
-    //     .spyOn(prismaService.user, 'findFirst')
-    //     .mockRejectedValueOnce(new Error());
-
-    //   try {
-    //     await userRepository.findById(MockUserFromJwt.almaId, MockAccessToken);
-    //   } catch (error) {
-    //     expect(error).toBeInstanceOf(AppError);
-    //     expect(error.code).toBe(500);
-    //     expect(error.message).toBe('could not get user');
-    //   }
-    // });
+      try {
+        await taskRepository.taskByFilter(
+          MockUserFromJwt.almaId,
+          MockFilterTask,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('failed to fetch tasks by filter');
+      }
+    });
   });
 });
