@@ -1,10 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Prisma } from '@prisma/client';
+import { Prisma, TaskStatus } from '@prisma/client';
 import axios from 'axios';
 import { PrismaService } from '../../../prisma.service';
 import { AppError } from '../../../common/errors/Error';
 import { TaskRepository } from '../repository/task.repository';
-import { MockPrismaTask, MockTaskData } from './mocks/task.mock';
+import {
+  MockCreateTask,
+  MockPrismaTask,
+  MockTask,
+  MockTaskData,
+  MockUserFromJwt,
+} from './mocks/task.mock';
 
 jest.mock('axios');
 
@@ -49,6 +55,41 @@ describe('UserRepository', () => {
 
       expect(taskRepository['formatManyTasks']).toHaveBeenCalledTimes(1);
       expect(result).toEqual(MockTaskData);
+    });
+  });
+
+  describe('create task', () => {
+    it('should create a new task successfully', async () => {
+      jest
+        .spyOn(prismaService.task, 'create')
+        .mockResolvedValueOnce(MockPrismaTask);
+
+      const result = await taskRepository.createTask(
+        MockUserFromJwt.almaId,
+        MockCreateTask,
+        TaskStatus.TODO,
+      );
+
+      expect(prismaService.task.create).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockTask);
+    });
+
+    it('should throw an AppError when almaRequest throws an error', async () => {
+      jest
+        .spyOn(prismaService.task, 'create')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        await taskRepository.createTask(
+          MockUserFromJwt.almaId,
+          MockCreateTask,
+          TaskStatus.TODO,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('internal server error');
+      }
     });
   });
 });
