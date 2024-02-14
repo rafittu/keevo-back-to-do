@@ -124,7 +124,7 @@ export class TaskRepository implements ITaskRepository {
 
       const formattedTasks = tasks.map((task) => ({
         ...task,
-        taskCategory: task.taskCategory.map((tc) => tc.category.name),
+        taskCategory: (task.taskCategory || []).map((tc) => tc.category.name),
       }));
 
       return this.formatManyTasks(formattedTasks);
@@ -199,7 +199,9 @@ export class TaskRepository implements ITaskRepository {
 
       const formatTaskCategory = {
         ...updatedTask,
-        taskCategory: updatedTask.taskCategory.map((tc) => tc.category.name),
+        taskCategory: (updatedTask.taskCategory || []).map(
+          (tc) => tc.category.name,
+        ),
       };
 
       return this.formatTask(formatTaskCategory);
