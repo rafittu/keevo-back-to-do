@@ -9,6 +9,7 @@ import {
   MockFilterTask,
   MockTask,
   MockTaskData,
+  MockUpdateTask,
   MockUserFromJwt,
 } from './mocks/task.mock';
 import { AppError } from '../../../common/errors/Error';
@@ -32,8 +33,8 @@ describe('Task Services', () => {
           provide: TaskRepository,
           useValue: {
             createTask: jest.fn().mockResolvedValue(MockTask),
-            taskByFilter: jest.fn().mockResolvedValue(MockTaskData),
-            updateTask: jest.fn().mockResolvedValue(''),
+            taskByFilter: jest.fn().mockResolvedValue([MockTaskData]),
+            updateTask: jest.fn().mockResolvedValue(MockTaskData),
             deleteTask: jest.fn().mockResolvedValue(null),
           },
         },
@@ -110,7 +111,29 @@ describe('Task Services', () => {
       );
 
       expect(taskRepository.taskByFilter).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([MockTaskData]);
+    });
+  });
+
+  describe('update task', () => {
+    it('should update task successfully', async () => {
+      const result = await updateTaskService.execute(
+        MockUserFromJwt,
+        MockTask.id,
+        MockUpdateTask,
+      );
+
+      expect(taskRepository.updateTask).toHaveBeenCalledTimes(1);
       expect(result).toEqual(MockTaskData);
+    });
+
+    it('should throw an App Error', async () => {
+      try {
+        await updateTaskService.execute(MockUserFromJwt, null, MockUpdateTask);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(400);
+      }
     });
   });
 });
