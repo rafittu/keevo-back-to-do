@@ -124,7 +124,7 @@ export class TaskRepository implements ITaskRepository {
 
       const formattedTasks = tasks.map((task) => ({
         ...task,
-        taskCategory: task.taskCategory.map((tc) => tc.category.name),
+        taskCategory: (task.taskCategory || []).map((tc) => tc.category.name),
       }));
 
       return this.formatManyTasks(formattedTasks);
