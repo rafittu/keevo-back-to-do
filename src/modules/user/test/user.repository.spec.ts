@@ -30,6 +30,8 @@ describe('UserRepository', () => {
 
     userRepository = module.get<UserRepository>(UserRepository);
     prismaService = module.get<PrismaService>(PrismaService);
+
+    jest.restoreAllMocks();
   });
 
   it('should be defined', () => {
@@ -319,6 +321,12 @@ describe('UserRepository', () => {
       jest
         .spyOn(userRepository as any, 'almaRequest')
         .mockResolvedValueOnce(MockAlmaUser);
+
+      jest
+        .spyOn(prismaService.taskCategory, 'deleteMany')
+        .mockResolvedValueOnce(null);
+
+      jest.spyOn(prismaService.task, 'deleteMany').mockResolvedValueOnce(null);
 
       jest
         .spyOn(prismaService.user, 'delete')
