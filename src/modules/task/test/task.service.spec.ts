@@ -35,7 +35,7 @@ describe('Task Services', () => {
             createTask: jest.fn().mockResolvedValue(MockTask),
             taskByFilter: jest.fn().mockResolvedValue([MockTaskData]),
             updateTask: jest.fn().mockResolvedValue(MockTaskData),
-            deleteTask: jest.fn().mockResolvedValue(null),
+            deleteTask: jest.fn().mockResolvedValue(MockTaskData),
           },
         },
       ],
@@ -134,6 +134,18 @@ describe('Task Services', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(400);
       }
+    });
+  });
+
+  describe('delete task', () => {
+    it('should delete task successfully', async () => {
+      const result = await deleteTaskService.execute(
+        MockUserFromJwt,
+        MockTask.id,
+      );
+
+      expect(taskRepository.deleteTask).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockTaskData);
     });
   });
 });
