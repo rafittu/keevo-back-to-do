@@ -15,7 +15,7 @@ import {
 
 jest.mock('axios');
 
-describe('UserRepository', () => {
+describe('Task Repository', () => {
   let taskRepository: TaskRepository;
   let prismaService: PrismaService;
 
