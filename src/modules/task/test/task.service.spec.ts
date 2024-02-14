@@ -13,6 +13,8 @@ import {
   MockUserFromJwt,
 } from './mocks/task.mock';
 import { AppError } from '../../../common/errors/Error';
+import { TaskStatus } from '@prisma/client';
+import * as Validations from '../utils/validations';
 
 describe('Task Services', () => {
   let createTaskService: CreateTaskService;
@@ -74,6 +76,22 @@ describe('Task Services', () => {
       expect(result).toEqual(MockTask);
     });
 
+    it('should validate task due date', async () => {
+      jest.spyOn(Validations, 'isValidDueDate').mockReturnValue(false);
+
+      const mockCreate = {
+        ...MockCreateTask,
+        dueDate: '2024-02-13',
+      };
+
+      try {
+        await createTaskService.execute(MockUserFromJwt, mockCreate);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(400);
+      }
+    });
+
     it('should throw an App Error', async () => {
       jest
         .spyOn(taskRepository, 'createTask')
@@ -117,10 +135,15 @@ describe('Task Services', () => {
 
   describe('update task', () => {
     it('should update task successfully', async () => {
+      const mockUpdate = {
+        ...MockUpdateTask,
+        status: TaskStatus.DONE,
+      };
+
       const result = await updateTaskService.execute(
         MockUserFromJwt,
         MockTask.id,
-        MockUpdateTask,
+        mockUpdate,
       );
 
       expect(taskRepository.updateTask).toHaveBeenCalledTimes(1);
