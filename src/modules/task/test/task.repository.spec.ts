@@ -6,6 +6,7 @@ import { AppError } from '../../../common/errors/Error';
 import { TaskRepository } from '../repository/task.repository';
 import {
   MockCreateTask,
+  MockFilterTask,
   MockPrismaTask,
   MockTask,
   MockTaskData,
@@ -91,5 +92,52 @@ describe('UserRepository', () => {
         expect(error.message).toBe('internal server error');
       }
     });
+  });
+
+  describe('find one', () => {
+    it('should find tasks by filter', async () => {
+      jest
+        .spyOn(prismaService.task, 'findMany')
+        .mockResolvedValueOnce([MockPrismaTask]);
+
+      const result = await taskRepository.taskByFilter(
+        MockUserFromJwt.almaId,
+        MockFilterTask,
+      );
+
+      const MockResult = {
+        ...result[0],
+        categories: MockTaskData.categories,
+      };
+
+      expect(prismaService.task.findMany).toHaveBeenCalledTimes(1);
+      expect([MockResult]).toEqual([MockTaskData]);
+    });
+
+    // it('should throw a not found error', async () => {
+    //   jest.spyOn(prismaService.user, 'findFirst').mockResolvedValueOnce(null);
+
+    //   try {
+    //     await userRepository.findById(MockUserFromJwt.almaId, MockAccessToken);
+    //   } catch (error) {
+    //     expect(error).toBeInstanceOf(AppError);
+    //     expect(error.code).toBe(404);
+    //     expect(error.message).toBe('user not found');
+    //   }
+    // });
+
+    // it('should throw an internal error', async () => {
+    //   jest
+    //     .spyOn(prismaService.user, 'findFirst')
+    //     .mockRejectedValueOnce(new Error());
+
+    //   try {
+    //     await userRepository.findById(MockUserFromJwt.almaId, MockAccessToken);
+    //   } catch (error) {
+    //     expect(error).toBeInstanceOf(AppError);
+    //     expect(error.code).toBe(500);
+    //     expect(error.message).toBe('could not get user');
+    //   }
+    // });
   });
 });
