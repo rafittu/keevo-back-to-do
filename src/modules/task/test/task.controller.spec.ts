@@ -45,7 +45,7 @@ describe('TaskController', () => {
         {
           provide: DeleteTaskService,
           useValue: {
-            execute: jest.fn().mockResolvedValue('MockTaskData'),
+            execute: jest.fn().mockResolvedValue(MockTaskData),
           },
         },
       ],
@@ -123,6 +123,23 @@ describe('TaskController', () => {
       expect(
         controller.update(MockUserFromJwt, MockTask.id, MockUpdateTask),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('delete task', () => {
+    it('should delete a task successfully', async () => {
+      const result = await controller.remove(MockUserFromJwt, MockTask.id);
+
+      expect(deleteTaskService.execute).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockTaskData);
+    });
+
+    it('should throw an error', () => {
+      jest
+        .spyOn(deleteTaskService, 'execute')
+        .mockRejectedValueOnce(new Error());
+
+      expect(controller.remove(MockUserFromJwt, MockTask.id)).rejects.toThrow();
     });
   });
 });
