@@ -4,6 +4,7 @@ import { CreateTaskService } from '../services/create-task.service';
 import { GetTaskByFilterService } from '../services/get-task.service';
 import { UpdateTaskService } from '../services/update-task.service';
 import { DeleteTaskService } from '../services/delete-task.service';
+import { MockCreateTask, MockTask, MockUserFromJwt } from './mocks/task.mock';
 
 describe('TaskController', () => {
   let controller: TaskController;
@@ -19,7 +20,7 @@ describe('TaskController', () => {
         {
           provide: CreateTaskService,
           useValue: {
-            execute: jest.fn().mockResolvedValue('MockTask'),
+            execute: jest.fn().mockResolvedValue(MockTask),
           },
         },
         {
@@ -54,5 +55,24 @@ describe('TaskController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('create task', () => {
+    it('should create a new task successfully', async () => {
+      const result = await controller.create(MockUserFromJwt, MockCreateTask);
+
+      expect(createTaskService.execute).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockTask);
+    });
+
+    it('should throw an error', () => {
+      jest
+        .spyOn(createTaskService, 'execute')
+        .mockRejectedValueOnce(new Error());
+
+      expect(
+        controller.create(MockUserFromJwt, MockCreateTask),
+      ).rejects.toThrow();
+    });
   });
 });
