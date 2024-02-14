@@ -5,6 +5,7 @@ import { CreateTaskDto } from '../../dto/create-task.dto';
 import { TaskPriority, TaskStatus } from '@prisma/client';
 import { ITask, ITaskData } from '../../interfaces/task.interface';
 import { TaskFilterDto } from '../../dto/filter-task.dto';
+import { UpdateTaskDto } from '../../dto/update-task.dto';
 
 export const MockUserFromJwt: IUserFromJwt = {
   almaId: MockAlmaUser.id,
@@ -49,4 +50,8 @@ export const MockTaskData: ITaskData = {
   completedAt: null,
   createdAt: MockTask.createdAt,
   updatedAt: faker.date.recent(),
+};
+
+export const MockUpdateTask: UpdateTaskDto = {
+  status: 'DOING',
 };

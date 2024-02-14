@@ -9,6 +9,7 @@ import {
   MockFilterTask,
   MockTask,
   MockTaskData,
+  MockUpdateTask,
   MockUserFromJwt,
 } from './mocks/task.mock';
 
@@ -38,7 +39,7 @@ describe('TaskController', () => {
         {
           provide: UpdateTaskService,
           useValue: {
-            execute: jest.fn().mockResolvedValue('MockTaskData'),
+            execute: jest.fn().mockResolvedValue(MockTaskData),
           },
         },
         {
@@ -99,6 +100,29 @@ describe('TaskController', () => {
         .mockRejectedValueOnce(new Error());
 
       expect(controller.getByFilter(MockUserFromJwt, {})).rejects.toThrow();
+    });
+  });
+
+  describe('update task', () => {
+    it('should update a task successfully', async () => {
+      const result = await controller.update(
+        MockUserFromJwt,
+        MockTask.id,
+        MockUpdateTask,
+      );
+
+      expect(updateTaskService.execute).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockTaskData);
+    });
+
+    it('should throw an error', () => {
+      jest
+        .spyOn(updateTaskService, 'execute')
+        .mockRejectedValueOnce(new Error());
+
+      expect(
+        controller.update(MockUserFromJwt, MockTask.id, MockUpdateTask),
+      ).rejects.toThrow();
     });
   });
 });
