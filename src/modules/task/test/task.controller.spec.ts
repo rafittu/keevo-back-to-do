@@ -4,7 +4,13 @@ import { CreateTaskService } from '../services/create-task.service';
 import { GetTaskByFilterService } from '../services/get-task.service';
 import { UpdateTaskService } from '../services/update-task.service';
 import { DeleteTaskService } from '../services/delete-task.service';
-import { MockCreateTask, MockTask, MockUserFromJwt } from './mocks/task.mock';
+import {
+  MockCreateTask,
+  MockFilterTask,
+  MockTask,
+  MockTaskData,
+  MockUserFromJwt,
+} from './mocks/task.mock';
 
 describe('TaskController', () => {
   let controller: TaskController;
@@ -26,7 +32,7 @@ describe('TaskController', () => {
         {
           provide: GetTaskByFilterService,
           useValue: {
-            execute: jest.fn().mockResolvedValue(['MockTaskData']),
+            execute: jest.fn().mockResolvedValue([MockTaskData]),
           },
         },
         {
@@ -73,6 +79,26 @@ describe('TaskController', () => {
       expect(
         controller.create(MockUserFromJwt, MockCreateTask),
       ).rejects.toThrow();
+    });
+  });
+
+  describe('get task by filter', () => {
+    it('should get tasks by filter successfully', async () => {
+      const result = await controller.getByFilter(
+        MockUserFromJwt,
+        MockFilterTask,
+      );
+
+      expect(getTaskByFilterService.execute).toHaveBeenCalledTimes(1);
+      expect(result).toEqual([MockTaskData]);
+    });
+
+    it('should throw an error', () => {
+      jest
+        .spyOn(getTaskByFilterService, 'execute')
+        .mockRejectedValueOnce(new Error());
+
+      expect(controller.getByFilter(MockUserFromJwt, {})).rejects.toThrow();
     });
   });
 });
