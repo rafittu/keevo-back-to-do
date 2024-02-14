@@ -65,6 +65,16 @@ describe('Task Services', () => {
     expect(deleteTaskService).toBeDefined();
   });
 
+  describe('validate task', () => {
+    it('should validate task due date', async () => {
+      const invalidDate = new Date().toISOString().split('T')[0];
+
+      const result = Validations.isValidDueDate(invalidDate);
+
+      expect(result).toEqual(false);
+    });
+  });
+
   describe('create task', () => {
     it('should create a new one successfully', async () => {
       const result = await createTaskService.execute(
