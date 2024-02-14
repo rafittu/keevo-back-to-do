@@ -4,7 +4,13 @@ import { CreateTaskService } from '../services/create-task.service';
 import { GetTaskByFilterService } from '../services/get-task.service';
 import { UpdateTaskService } from '../services/update-task.service';
 import { DeleteTaskService } from '../services/delete-task.service';
-import { MockCreateTask, MockTask, MockUserFromJwt } from './mocks/task.mock';
+import {
+  MockCreateTask,
+  MockFilterTask,
+  MockTask,
+  MockTaskData,
+  MockUserFromJwt,
+} from './mocks/task.mock';
 import { AppError } from '../../../common/errors/Error';
 
 describe('Task Services', () => {
@@ -26,7 +32,7 @@ describe('Task Services', () => {
           provide: TaskRepository,
           useValue: {
             createTask: jest.fn().mockResolvedValue(MockTask),
-            taskByFilter: jest.fn().mockResolvedValue(''),
+            taskByFilter: jest.fn().mockResolvedValue(MockTaskData),
             updateTask: jest.fn().mockResolvedValue(''),
             deleteTask: jest.fn().mockResolvedValue(null),
           },
@@ -93,6 +99,18 @@ describe('Task Services', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(500);
       }
+    });
+  });
+
+  describe('find task', () => {
+    it('should find tasks successfully', async () => {
+      const result = await findTaskService.execute(
+        MockUserFromJwt,
+        MockFilterTask,
+      );
+
+      expect(taskRepository.taskByFilter).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockTaskData);
     });
   });
 });
