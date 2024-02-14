@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { TaskRepository } from '../repository/task.repository';
 import { ITaskRepository } from '../interfaces/repository.interface';
-import { IUserFromJwt } from 'src/modules/auth/interfaces/auth.interface';
+import { IUserFromJwt } from '../../../modules/auth/interfaces/auth.interface';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskStatus } from '@prisma/client';
 import { ITaskData } from '../interfaces/task.interface';
-import { AppError } from 'src/common/errors/Error';
+import { AppError } from '../../../common/errors/Error';
 
 @Injectable()
 export class UpdateTaskService {
