@@ -4,6 +4,8 @@ import { CreateTaskService } from '../services/create-task.service';
 import { GetTaskByFilterService } from '../services/get-task.service';
 import { UpdateTaskService } from '../services/update-task.service';
 import { DeleteTaskService } from '../services/delete-task.service';
+import { MockCreateTask, MockTask, MockUserFromJwt } from './mocks/task.mock';
+import { AppError } from '../../../common/errors/Error';
 
 describe('Task Services', () => {
   let createTaskService: CreateTaskService;
@@ -23,7 +25,7 @@ describe('Task Services', () => {
         {
           provide: TaskRepository,
           useValue: {
-            createTask: jest.fn().mockResolvedValue(''),
+            createTask: jest.fn().mockResolvedValue(MockTask),
             taskByFilter: jest.fn().mockResolvedValue(''),
             updateTask: jest.fn().mockResolvedValue(''),
             deleteTask: jest.fn().mockResolvedValue(null),
@@ -52,5 +54,45 @@ describe('Task Services', () => {
     expect(findTaskService).toBeDefined();
     expect(updateTaskService).toBeDefined();
     expect(deleteTaskService).toBeDefined();
+  });
+
+  describe('create task', () => {
+    it('should create a new one successfully', async () => {
+      const result = await createTaskService.execute(
+        MockUserFromJwt,
+        MockCreateTask,
+      );
+
+      expect(taskRepository.createTask).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(MockTask);
+    });
+
+    it('should throw an App Error', async () => {
+      jest
+        .spyOn(taskRepository, 'createTask')
+        .mockRejectedValueOnce(
+          new AppError('error.code', 400, 'Error message'),
+        );
+
+      try {
+        await createTaskService.execute(MockUserFromJwt, MockCreateTask);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(400);
+      }
+    });
+
+    it('should throw an internal error', async () => {
+      jest
+        .spyOn(taskRepository, 'createTask')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        await createTaskService.execute(MockUserFromJwt, MockCreateTask);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+      }
+    });
   });
 });
