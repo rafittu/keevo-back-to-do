@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Prisma, TaskStatus } from '@prisma/client';
-import axios from 'axios';
+import { Categories, Prisma, TaskStatus } from '@prisma/client';
 import { PrismaService } from '../../../prisma.service';
 import { AppError } from '../../../common/errors/Error';
 import { TaskRepository } from '../repository/task.repository';
@@ -10,6 +9,7 @@ import {
   MockPrismaTask,
   MockTask,
   MockTaskData,
+  MockUpdateTask,
   MockUserFromJwt,
 } from './mocks/task.mock';
 
@@ -128,6 +128,61 @@ describe('UserRepository', () => {
         expect(error).toBeInstanceOf(AppError);
         expect(error.code).toBe(500);
         expect(error.message).toBe('failed to fetch tasks by filter');
+      }
+    });
+  });
+
+  describe('update', () => {
+    it('should update task successfully', async () => {
+      jest
+        .spyOn(prismaService.taskCategory, 'deleteMany')
+        .mockResolvedValueOnce(null);
+
+      jest
+        .spyOn(prismaService.task, 'update')
+        .mockResolvedValueOnce(MockPrismaTask);
+
+      const MockUpdate = {
+        ...MockUpdateTask,
+        categories: [Categories.WORK],
+      };
+
+      const result = await taskRepository.updateTask(
+        MockUserFromJwt.almaId,
+        MockTask.id,
+        MockUpdate,
+      );
+
+      const MockResult = {
+        ...result,
+        categories: MockTaskData.categories,
+      };
+
+      expect(prismaService.taskCategory.deleteMany).toHaveBeenCalledTimes(1);
+      expect(prismaService.task.update).toHaveBeenCalledTimes(1);
+      expect(MockResult).toEqual(MockTaskData);
+    });
+
+    it('should throw an AppError', async () => {
+      jest
+        .spyOn(prismaService.taskCategory, 'deleteMany')
+        .mockRejectedValueOnce(new Error());
+
+      try {
+        const MockUpdate = {
+          ...MockUpdateTask,
+          categories: [Categories.WORK],
+        };
+
+        await taskRepository.updateTask(
+          MockUserFromJwt.almaId,
+          MockTask.id,
+          MockUpdate,
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect(error.code).toBe(500);
+        expect(error.message).toBe('failed to update task');
       }
     });
   });
