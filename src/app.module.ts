@@ -24,6 +24,7 @@ import { TaskModule } from './modules/task/task.module';
         UPDATE_USER_PATH: Joi.string().required(),
         DELETE_USER_PATH: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
+        CORS_ORIGINS: Joi.string().required(),
       }),
     }),
     UserModule,
