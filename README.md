@@ -119,8 +119,6 @@ $ npm run start:dev
 
 ## Testes
 
-## Testes
-
 Os testes desempenham um papel fundamental na garantia da qualidade do código e na confiabilidade da aplicação. Com isso, à API possui uma cobertura de testes unitários abrangente, com aproximadamente 100% de cobertura em cada parte essencial do código, garantindo a qualidade e o correto funcionamento do sistema.
 
 Para executar os testes unitários, utilize o seguinte comando:
