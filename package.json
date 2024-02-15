@@ -1,8 +1,8 @@
 {
-  "name": "back-to-do",
+  "name": "back-to-do-list",
   "version": "1.0.0",
   "description": "",
-  "author": "",
+  "author": "Rafael Rodrigues Ribeiro",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
