@@ -1,73 +1,160 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 📝 Back-end da aplicação To-Do List!
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+###
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+<br>
 
-## Description
+Este projeto consiste em uma API back-end como parte de um [desafio técnico](https://github.com/keevosoftwares/desafio-fullstack) para gerenciar uma lista de tarefas.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Para uma experiência completa, siga o passo-a-passo abaixo para iniciar o servidor e, depois, inicie a [interface front-end](https://github.com/rafittu/keevo-front-to-do) para interagir com a API!
 
-## Installation
+<br>
+
+## Tecnologias
+
+Este projeto utiliza as seguintes tecnologias:
+
+- **Node.js** com framework **NestJS** e **TypeScript**;
+- **Prisma ORM** para comunicação e manipulação do banco de dados **PostgreSQL**;
+- **Passport.js** para implementação de estratégias de autenticação;
+
+- **Docker** como uma ferramenta de containerização;
+- **Jest** para execução dos testes unitários;
+- **Swagger** para documentação da API;
+
+- **[API externa](https://github.com/rafittu/back-alma)**: API utilizada para serviços de usuário e autenticação.
+
+<br>
+
+## Funcionalidades
+
+Antes de gerenciar tarefas, é necessário que o usuário realize o cadastro na plataforma. Foi desenvolvido um CRUD de usuário para tal funcionalidade.
+
+<br>
+
+Realizado o cadastro, é disponibilizado um endpoint para autenticação, onde após validação de email e senha, a requisição retorna um token de acesso para ser utilizado nas próximas requisições.
+
+<br>
+
+Após cadastro e autenticação na API, o usuário consegue acessar o CRUD para gerenciar suas tarefas com as seguintes funcionalidade:
+
+- Criar uma tarefa:
+```
+{
+	"title": "Keevo To-Do",
+	"description": "Develop a fullstack to-do list app",
+	"priority": "HIGH",
+	"dueDate": "2024-02-17",
+	"categories": ["WORK", "PROJECTS"]
+}
+```
+
+<br>
+
+- Buscar uma ou mais tarefas por filtro:
+    - **Id**: id da tarefa;
+    - **Data de vencimento**: prazo limite para finalizar tarefa;
+    - **Completado em**: data em que a tarefa foi concluída;
+    - **Categoria**: "WORK", "STUDIES", "PERSONAL", "HEALTH", "PROJECTS", "SHOPPING", "LEISURE", "TRAVEL", "FINANCES", "EVENTS";
+    - **Status**: "TODO", "DOING", "HOLD", "DONE";
+    - **Prioridade**: "LOW", "MEDIUM", "HIGH", "URGENT";
+    - Caso não seja aplicado nenhum filtro, todas as tarefas do usuário é retornada.
+
+  <br>
+
+- Editar uma tarefa da lista;
+  
+<br>
+
+- Deletar uma tarefa da lista;
+
+<br>
+
+## Requisitos para rodar a aplicação
+
+- NodeJs;
+- Docker (para execução do banco de dados PostgreSQL)
+- [API externa](https://github.com/rafittu/back-alma) em execução. Instruções de como iniciar o servidor estão disponíveis no repositório.
+
+<br>
+
+## Instalação
+
+Clonando o repositório:
 
 ```bash
+$ git clone git@github.com:rafittu/keevo-back-to-do.git
+```
+
+Instalando as dependências:
+
+```bash
+$ cd back-to-do
 $ npm install
 ```
 
-## Running the app
+<br>
+
+## Iniciando o app
+
+Crie um arquivo `.env` na raiz do projeto e preencha as informações de acordo com o arquivo `.env.example` disponível.
+
+Execute o banco de dados PostgreSQL usando Docker:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ docker-compose up -d
 ```
 
-## Test
+Iniciando o servidor:
 
 ```bash
-# unit tests
+# modo de desenvolvimento
+$ npm run start
+
+# modo de observação
+$ npm run start:dev
+```
+
+<br>
+
+## Testes
+
+## Testes
+
+Os testes desempenham um papel fundamental na garantia da qualidade do código e na confiabilidade da aplicação. Com isso, à API possui uma cobertura de testes unitários abrangente, com aproximadamente 100% de cobertura em cada parte essencial do código, garantindo a qualidade e o correto funcionamento do sistema.
+
+Para executar os testes unitários, utilize o seguinte comando:
+
+```bash
 $ npm run test
+```
 
-# e2e tests
-$ npm run test:e2e
+Você também pode gerar um relatório de cobertura dos testes para verificar quais partes do código foram testadas. Para gerar esse relatório, utilize o seguinte comando:
 
-# test coverage
+```bash
 $ npm run test:cov
 ```
 
-## Support
+<br>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Documentação
 
-## Stay in touch
+A documentação completa da API com suas rotas e exemplos está disponível através do Swagger. Para acessá-la, siga as etapas abaixo:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- Certifique-se de ter a API em execução localmente ou em um ambiente acessível;
+- Abra um navegador da web e acesse a seguinte URL: `http://localhost:3001/v1/api-doc` (substitua `3001` pelo número da porta inserida no arquivo `.env`);
+- A documentação interativa da API será exibida no Swagger UI, onde você poderá explorar todos os endpoints, seus parâmetros e exemplos de solicitação.
 
-## License
+<br>
 
-Nest is [MIT licensed](LICENSE).
+## Uso
+
+Com a [API externa](https://github.com/rafittu/back-alma) e a Back-end To-Do List em execução, você pode também iniciar a [interface front-end](https://github.com/rafittu/keevo-front-to-do) e começar a explorar as funcionalidades!
+
+<br>
+
+##
+
+<p align="right">
+  <a href="https://www.linkedin.com/in/rafittu/">Rafael Ribeiro 🚀</a>
+</p>
