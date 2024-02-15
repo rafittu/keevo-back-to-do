@@ -1,0 +1,1730 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Keevo To-do Backend API Documentation",
+      "description": "Back-end API for Keevo To-do application",
+      "contact": {
+        "name": "Rafael Ribeiro",
+        "email": "rafittu@outlook.com"
+      },
+      "version": "1.0.0"
+    },
+
+    "paths": {
+      "/auth/signin": {
+        "post": {
+          "summary": "User login",
+          "description": "Authenticate a user with the provided credentials",
+          "tags": ["Authentication"],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserCredentials"
+                },
+                "example": {
+                  "email": "johndoe@example.com",
+                  "password": "password123"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User authenticated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AccessToken"
+                  },
+                  "example": {
+                    "accessToken": "eyJhbGciOiJ.eyJzdW5MDIyfQ.SflKxwk6yJV_adQssw5c"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "email or password is invalid",
+                      "code": "local-auth.guards",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Internal Server Error",
+                      "code": "internal.server.error",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/user/create": {
+        "post": {
+          "summary": "Create user",
+          "description": "Route to register new users. A token with 30 minutes expiration time is sent to the provided email",
+          "tags": ["User"],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignUp"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example of a valid user registration",
+                    "value": {
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "socialName": "Joane Eod",
+                      "username": "jd",
+                      "bornDate": "1990-01-01",
+                      "motherName": "Jane Doe",
+                      "email": "johndoe@example.com",
+                      "phone": "1234567890",
+                      "password": "#Password123",
+                      "passwordConfirmation": "#Password123"
+                    }
+                  },
+                  "example2": {
+                    "summary": "Example of required fields only",
+                    "value": {
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "motherName": "Jane Doe",
+                      "phone": "1234567890",
+                      "email": "johndoe@example.com",
+                      "password": "#Password123",
+                      "passwordConfirmation": "#Password123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User created successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/User"
+                  },
+                  "example": {
+                    "id": "123456",
+                    "name": "John Doe",
+                    "socialName": null,
+                    "createdAt": "2024-02-06T12:00:00Z",
+                    "updatedAt": "2024-02-06T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": ["One or more fields are missing or invalid"],
+                      "code": "bad.request",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "invalid ip address",
+                      "code": "user-service.createUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "field already in use by another user",
+                      "value": {
+                        "error": {
+                          "message": "[ 'email', 'phone' ] already in use",
+                          "code": "user-repository.createUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "accessing new channel",
+                      "value": {
+                        "error": {
+                          "message": "User 'user.id' registered on [ user.allowed_channels ] platform. A confirmation token was sent to 'user.contact.email' and after confirmation, use the same credentials from 'user.allowed_channels' to access [ data.originChannel ].",
+                          "code": "user-service.createUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Unprocessable Entity",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "passwords do not match",
+                      "code": "user-service.createUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+  
+                  "examples": {
+                    "example1": {
+                      "summary": "repository error",
+                      "value": {
+                        "error": {
+                          "message": "user not created",
+                          "code": "user-repository.createUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "service error",
+                      "value": {
+                        "error": {
+                          "message": "failed to create user",
+                          "code": "user-service.createUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example3": {
+                      "summary": "email service error",
+                      "value": {
+                        "error": {
+                          "message": "failed to send email for account confirmation",
+                          "code": "email-service.sendConfirmationEmail",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example4": {
+                      "summary": "failed to send message to amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "failed to send message to SQS",
+                          "code": "email-service.sendMessageToSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example5": {
+                      "summary": "failed to poll messages from amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "error polling messages from SQS: `error message`",
+                          "code": "sqs-worker-service.pollMessagesFromSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example6": {
+                      "summary": "failed to process email",
+                      "value": {
+                        "error": {
+                          "message": "error processing message: `error message`",
+                          "code": "sqs-worker-service.processMessage",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user": {
+        "get": {
+          "summary": "Get user",
+          "description": "Route to find user",
+          "tags": ["User"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],            
+          "responses": {
+            "200": {
+              "description": "User data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserData"
+                  },
+                  "example": {
+                    "id": "123456",
+                    "name": "John Doe",
+                    "socialName": null,
+                    "bornDate": "1990-01-01",
+                    "motherName": "Jane Doe",
+                    "username": "johndoe",
+                    "email": "johndoe@example.com",
+                    "phone": "1234567890",
+                    "status": "ACTIVE",
+                    "createdAt": "2023-05-10T12:00:00Z",
+                    "updatedAt": "2023-05-11T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "user not found",
+                      "code": "user-repository.findUserById",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/update": {
+        "patch": {
+          "summary": "Update user",
+          "description": "Route to update user data. If updating account email, a token is sent to the provided email and has an expiration time of 30 minutes",
+          "tags": ["User"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUser"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example of updating password",
+                    "value": {
+                      "oldPassword": "password123",
+                      "newPassword": "newpassword",
+                      "passwordConfirmation": "newpassword"
+                    }
+                  },
+                  "example2": {
+                    "summary": "Example of updating username and email",
+                    "value": {
+                      "username": "Jd",
+                      "email": "jd@mail.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserData"
+                  },
+                  "example": {
+                    "id": "123456",
+                    "name": "John Doe",
+                    "socialName": null,
+                    "bornDate": "1990-01-01",
+                    "motherName": "Jane Doe",
+                    "username": "joh",
+                    "email": "jd@mail.com",
+                    "phone": "1234567890",
+                    "status": "ACTIVE",
+                    "createdAt": "2023-05-10T12:00:00Z",
+                    "updatedAt": "2023-05-11T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "invalid user id",
+                      "value": {
+                        "error": {
+                          "message": ["user id not found"],
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "invalid field",
+                      "value": {
+                        "error": {
+                          "message": [
+                            "One or more fields are missing or invalid"
+                          ],
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "invalid ip address",
+                      "code": "user-service.updateUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "email/phone already taken",
+                      "code": "user-repository.createUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "missing old password property",
+                      "value": {
+                        "error": {
+                          "message": "missing 'oldPassword' field",
+                          "code": "user-service.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "validate new password",
+                      "value": {
+                        "error": {
+                          "message": "new passwords do not match",
+                          "code": "user-service.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example3": {
+                      "summary": "validate old password",
+                      "value": {
+                        "error": {
+                          "message": "old passwords do not match",
+                          "code": "user-repository.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "user not updated",
+                          "code": "user-repository.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "service internal error",
+                      "value": {
+                        "error": {
+                          "message": "failed to update user data",
+                          "code": "user-service.updateUser",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example3": {
+                      "summary": "failed to send message to amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "failed to send message to SQS",
+                          "code": "email-service.sendMessageToSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example4": {
+                      "summary": "failed to poll messages from amazon simple queue service",
+                      "value": {
+                        "error": {
+                          "message": "error polling messages from SQS: `error message`",
+                          "code": "sqs-worker-service.pollMessagesFromSQS",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example5": {
+                      "summary": "failed to process email",
+                      "value": {
+                        "error": {
+                          "message": "error processing message: `error message`",
+                          "code": "sqs-worker-service.processMessage",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/user/delete": {
+        "delete": {
+          "summary": "Delete account",
+          "description": "Route to delete user account. After this operation, user will receive the 'CANCELLED' status  and after 21 days if not reactivate, the account will be permanently deleted",
+          "tags": ["User"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Ok"
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "user not cancelled",
+                      "code": "user-repository.deleteUser",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "task/create": {
+        "post": {
+          "summary": "Create task",
+          "description": "Endpoint to create new task",
+          "tags": ["Task"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateTask"
+                },
+                "example": {
+                  "title": "App To-do",
+                  "description": "Develop front-end app",
+                  "priority": "URGENT",
+                  "dueDate": "2024-02-14",
+                  "categories": ["WORK", "PROJECTS"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Task created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Task"
+                  },
+                  "example": {
+                    "id": "cds66-s88-cds5-ngy4f-142ca1e",
+                    "title": "App To-do",
+                    "description": "Develop front-end app",
+                    "priority": "URGENT",
+                    "dueDate": "2024-02-14",
+                    "status": "TODO",
+                    "createdAt": "2024-02-08T22:24:28.296Z"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "email or password is invalid",
+                      "code": "local-auth.guards",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "internal server error",
+                      "code": "task-repository.createTask",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/task/filter": {
+        "get": {
+          "summary": "Get tasks",
+          "description": "Route to find user tasks by filter",
+          "tags": ["Task"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "Query Parameters",
+              "in": "query",
+              "required": false,
+              "description": "key: value",
+              "schema": {
+                "$ref": "#/components/schemas/TaskFilters"
+              }
+            }
+          ],            
+          "responses": {
+            "200": {
+              "description": "Task data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskData"
+                  },
+                  "example": [{
+                    "taskId": "j0rb-rr3-09d-d9s-4ds9cs9",
+                    "userId": "cds66-s88-cds5-ngy4f-142ca1e",
+                    "title": "App To-do",
+                    "description": "Develop front-end app",
+                    "priority": "URGENT",
+                    "dueDate": "2024-02-14T00:00:00.000Z",
+                    "status": "TODO",
+                    "categories": [
+                      "PERSONAL",
+                      "WORK"
+                    ],
+                    "createdAt": "2024-02-08T22:24:28.296Z",
+                    "updatedAt": "2024-02-10T12:00:00Z"
+                  }]
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "failed to fetch tasks by filter",
+                      "code": "task-repository.findTaskByFilter",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/task/update/:id": {
+        "patch": {
+          "summary": "Update task",
+          "description": "Route to update task",
+          "tags": ["Task"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "description": "task id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateTask"
+                },
+                "examples": {
+                  "example1": {
+                    "summary": "Example of updating task description",
+                    "value": {
+                      "description": "Develop front-end app using React framework"
+                    }
+                  },
+                  "example2": {
+                    "summary": "Example of updating task categories",
+                    "value": {
+                      "categories": ["PERSONAL", "WORK", "PROJECTS"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Task data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskData"
+                  },
+                  "example": [{
+                    "taskId": "j0rb-rr3-09d-d9s-4ds9cs9",
+                    "userId": "cds66-s88-cds5-ngy4f-142ca1e",
+                    "title": "App To-do",
+                    "description": "Develop front-end app using React framework",
+                    "priority": "URGENT",
+                    "dueDate": "2024-02-14T00:00:00.000Z",
+                    "status": "TODO",
+                    "categories": ["PERSONAL", "WORK", "PROJECTS"],
+                    "createdAt": "2024-02-08T22:24:28.296Z",
+                    "updatedAt": "2024-02-10T12:00:00Z"
+                  }]
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "invalid user id",
+                      "value": {
+                        "error": {
+                          "message": ["task id not found"],
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "invalid or missing task id",
+                      "value": {
+                        "error": {
+                          "message": "missing task id parameter",
+                          "code": "bad.request",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "example": {
+                    "error": {
+                      "message": "Unauthorized",
+                      "code": "auth-guard.jwtAuth",
+                      "status": true
+                    },
+                    "data": {}
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "failed to update task",
+                          "code": "task-repository.updateTask",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/task/delete/:id": {
+        "delete": {
+          "summary": "Delete task",
+          "description": "Route to delete task",
+          "tags": ["Task"],
+          "security": [
+            {
+              "BearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "description": "Bearer {token}",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "id",
+              "in": "path",
+              "description": "task id",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Task data",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/TaskData"
+                  },
+                  "example": {
+                    "taskId": "j0rb-rr3-09d-d9s-4ds9cs9",
+                    "userId": "cds66-s88-cds5-ngy4f-142ca1e",
+                    "title": "App To-do",
+                    "description": "Develop front-end app using React framework",
+                    "priority": "URGENT",
+                    "dueDate": "2024-02-14T00:00:00.000Z",
+                    "status": "TODO",
+                    "createdAt": "2024-02-08T22:24:28.296Z",
+                    "updatedAt": "2024-02-10T12:00:00Z"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "failed to delete task",
+                          "code": "task-repository.deleteTask",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    },
+                    "example2": {
+                      "summary": "repository internal error",
+                      "value": {
+                        "error": {
+                          "message": "task to delete does not exist",
+                          "code": "task-repository.deleteTask",
+                          "status": true
+                        },
+                        "data": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "components": {
+        "schemas": {
+          "SignUp": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "maxLength": 125,
+                    "description": "First name of the user"
+                },
+                "lastName": {
+                    "type": "string",
+                    "maxLength": 125,
+                    "description": "Last name of the user"
+                },
+                "socialName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Social name of the user"
+                },
+                "bornDate": {
+                    "type": "string",
+                    "formate": "date-time",
+                    "description": "Date of birth of the user (yyyy-mm-dd)"
+                },
+                "motherName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Mother's name of the user"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 45,
+                    "description": "Username of the user"
+                },
+                "email": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Email address of the user"
+                },
+                "phone": {
+                    "type": "string",
+                    "description": "Phone number of the user"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": "7",
+                    "pattern": "at least one uppercase letter, one lowercase letter and one number or symbol",
+                    "description": "Password of the user"
+                },
+                "passwordConfirmation": {
+                    "type": "string",
+                    "description": "Password confirmation"
+                }
+            },
+            "required": [
+                "firstName",
+                "lastName",
+                "bornDate",
+                "motherName",
+                "email",
+                "phone",
+                "password",
+                "passwordConfirmation"
+            ]
+          },
+          "User": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "User identification"
+                  },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the user"
+                },
+                "socialName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Social name of the user"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "description": "Date and time of user creation"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "description": "Date and time of last user update"
+                  }
+                
+            }
+          },
+          "UserData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "User identification"
+                  },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the user"
+                },
+                "socialName": {
+                    "type": "string",
+                    "maxLength": 250,
+                    "description": "Social name of the user"
+                },
+                "bornDate": {
+                  "type": "string",
+                  "description": "Date of birth of the user"
+                },
+                "motherName": {
+                  "type": "string",
+                  "description": "Mother's name of the user"
+                },
+                "username": {
+                  "type": "string",
+                  "description": "Username of the user"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email address of the user"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Phone number of the user"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PENDING_CONFIRMATION",
+                    "ACTIVE",
+                    "BLOCKED",
+                    "CANCELLED",
+                    "BANNED"
+                  ],
+                  "description": "User status"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "description": "Date and time of user creation"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "description": "Date and time of last user update"
+                  }
+                
+            }
+          },
+          "UpdateUser": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "description": "First name of the user"
+              },
+              "lastName": {
+                "type": "string",
+                "description": "Last name of the user"
+              },
+              "socialName": {
+                "type": "string",
+                "description": "Social name of the user"
+              },
+              "bornDate": {
+                "type": "string",
+                "description": "Date of birth of the user"
+              },
+              "motherName": {
+                "type": "string",
+                "description": "Mother's name of the user"
+              },
+              "username": {
+                "type": "string",
+                "description": "Username of the user"
+              },
+              "email": {
+                "type": "string",
+                "description": "Email address of the user"
+              },
+              "phone": {
+                "type": "string",
+                "description": "Phone number of the user"
+              },
+              "oldPassword": {
+                "type": "string",
+                "description": "Account old password"
+              },
+              "newPassword": {
+                "type": "string",
+                "description": "Account new password"
+              },
+              "passwordConfirmation": {
+                "type": "string",
+                "description": "Password confirmation"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PENDING_CONFIRMATION",
+                  "ACTIVE",
+                  "BLOCKED",
+                  "CANCELLED",
+                  "BANNED"
+                ],
+                "description": "Status of the user"
+              }
+            }
+          },
+          "UserCredentials": {
+            "type": "object",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "Email address of the user"
+              },
+              "password": {
+                "type": "string",
+                "description": "Password of the user"
+              }
+            }
+          },
+          "AccessToken": {
+            "type": "object",
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "description": "Access token used for authentication in subsequent API calls. This token should be included in the 'Authorization' header as a Bearer Token"
+              }
+            }
+          },
+          "CreateTask": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              }
+            },
+            "required": [
+              "title",
+              "description"
+            ]
+          },
+          "Task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Task identification"
+              },
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "TODO",
+                  "DOING",
+                  "HOLD",
+                  "DONE"
+                ],
+                "description": "Task status"
+              },
+              "createdAt": {
+                "type": "string",
+                "description": "Date that task was created"
+              }
+            }
+          },
+          "TaskFilters": {
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Task identification"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "TODO",
+                  "DOING",
+                  "HOLD",
+                  "DONE"
+                ],
+                "description": "Task status"
+              },
+              "completedAt": {
+                "type": "string",
+                "description": "Date that task was finished"
+              }
+            }
+          },
+          "TaskData": {
+            "type": "array",
+            "properties": {
+              "taskId": {
+                "type": "string",
+                "description": "Task identification"
+              },
+              "userId": {
+                "type": "string",
+                "description": "User identification"
+              },
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "TODO",
+                  "DOING",
+                  "HOLD",
+                  "DONE"
+                ],
+                "description": "Task status"
+              },
+              "completedAt": {
+                "type": "string",
+                "description": "Date that task was marked as finished"
+              },
+              "createdAt": {
+                "type": "string",
+                "description": "Date that task was created"
+              },
+              "updatedAt": {
+                "type": "string",
+                "description": "Date that task was updated"
+              }
+            }
+          },
+          "UpdateTask": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Task title"
+              },
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH",
+                  "URGENT"
+                ],
+                "description": "Priority of task"
+              },
+              "dueDate": {
+                "type": "string",
+                "description": "Limit date to finish task"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of task"
+              },
+              "categories": {
+                "type": "string",
+                "enum": [
+                  "WORK",
+                  "STUDIES",
+                  "PERSONAL",
+                  "HEALTH",
+                  "PROJECTS",
+                  "SHOPPING",
+                  "LEISURE",
+                  "TRAVEL",
+                  "FINANCES",
+                  "EVENTS"
+                ],
+                "description": "Task categories"
+              },
+              "completedAt": {
+                "type": "string",
+                "description": "Date that task was marked as finished"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "TODO",
+                  "DOING",
+                  "HOLD",
+                  "DONE"
+                ],
+                "description": "Task status"
+              }
+            }
+          },
+
+          "Error": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Error message"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "Error code"
+                  },
+                  "status": {
+                    "type": "boolean",
+                    "description": "Error status"
+                  }
+                }
+              },
+              "data": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          },
+          "securitySchemes": {
+            "BearerAuth": {
+              "type": "http",
+              "scheme": "bearer",
+              "bearerFormat": "JWT"
+            }
+          }
+        }
+    }
+}

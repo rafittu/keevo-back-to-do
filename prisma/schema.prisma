@@ -6,3 +6,83 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  DOING
+  HOLD
+  DONE
+}
+
+enum Categories {
+  WORK
+  STUDIES
+  PERSONAL
+  HEALTH
+  PROJECTS
+  SHOPPING
+  LEISURE
+  TRAVEL
+  FINANCES
+  EVENTS
+}
+
+model User {
+  id          String   @id @unique @default(uuid()) @db.Uuid
+  alma_id     String   @unique @db.Uuid
+  name        String   @unique @db.VarChar(250)
+  social_name String?  @db.VarChar(250)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt()
+
+  tasks Task[] @relation("UserTasks")
+
+  @@map("users")
+}
+
+model Task {
+  id           String        @id @unique @default(uuid()) @db.Uuid
+  user_id      String        @db.Uuid
+  title        String        @db.VarChar(250)
+  description  String        @db.VarChar(700)
+  priority     TaskPriority?
+  due_date     DateTime?
+  status       TaskStatus
+  completed_at DateTime?
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt()
+
+  user         User           @relation("UserTasks", fields: [user_id], references: [id])
+  taskCategory TaskCategory[] @relation("TaskCategories")
+
+  @@map("tasks")
+}
+
+model Category {
+  id         String     @id @unique @default(uuid()) @db.Uuid
+  name       Categories @unique
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt()
+
+  tasks TaskCategory[] @relation("TaskCategories")
+
+  @@map("categories")
+}
+
+model TaskCategory {
+  task_id     String @db.Uuid
+  category_id String @db.Uuid
+
+  task     Task     @relation("TaskCategories", fields: [task_id], references: [id])
+  category Category @relation("TaskCategories", fields: [category_id], references: [id])
+
+  @@unique([task_id, category_id])
+  @@map("task_categories")
+}
