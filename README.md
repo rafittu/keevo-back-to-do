@@ -105,6 +105,12 @@ Execute o banco de dados PostgreSQL usando Docker:
 $ docker-compose up -d
 ```
 
+Para garantir que o banco de dados esteja atualizado com as ultimas alterações, rode o comando:
+
+```bash
+$ npx prisma migrate dev
+```
+
 Iniciando o servidor:
 
 ```bash
