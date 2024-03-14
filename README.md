@@ -1,10 +1,14 @@
-# 📝 Back-end da aplicação To-Do List!
+# 📝 Back-end da aplicação UmTrem ToDo
 
 ###
 
 <br>
 
-Este projeto consiste em uma API back-end para gerenciar uma lista de tarefas.
+O projeto UmTrem ToDo consiste em uma API desenvolvida para simplificar a gestão de tarefas e afazeres diários. Com recursos que permitem ao usuário criar, visualizar, atualizar e excluir suas atividades com facilidade, a plataforma visa aumentar a produtividade e a organização na rotina diária.
+
+Além disso, a API realiza integração com a [API ALMA](https://github.com/rafittu/back-alma), permitindo a comunicação entre as duas plataformas para determinadas tarefas, como a criação de novos usuários e autenticação.
+
+Inspirada na cultura mineira, onde "um trem" pode significar qualquer coisa, celebramos a riqueza regional de Minas Gerais incorporando-a em uma solução tecnológica que visa simplificar e organizar as atividades cotidianas dos usuários!
 
 Para uma experiência completa, siga o passo-a-passo abaixo para iniciar o servidor e, depois, inicie a [interface front-end](https://github.com/rafittu/keevo-front-to-do) para interagir com a API!
 
