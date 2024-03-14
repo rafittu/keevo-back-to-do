@@ -41,11 +41,11 @@ Após cadastro e autenticação na API, o usuário consegue acessar o CRUD para 
 - Criar uma tarefa:
 ```
 {
-	"title": "Keevo To-Do",
-	"description": "Develop a fullstack to-do list app",
+	"title": "Learn Quantum Computing",
+	"description": "Learn quantum computing with Python and IBM Quantum Experience using Qiskit",
 	"priority": "HIGH",
-	"dueDate": "2024-02-17",
-	"categories": ["WORK", "PROJECTS"]
+	"dueDate": "2024-04-18",
+	"categories": ["STUDIES", "PROJECTS"]
 }
 ```
 
