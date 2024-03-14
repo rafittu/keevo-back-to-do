@@ -4,7 +4,7 @@
 
 <br>
 
-Este projeto consiste em uma API back-end como parte de um [desafio técnico](https://github.com/keevosoftwares/desafio-fullstack) para gerenciar uma lista de tarefas.
+Este projeto consiste em uma API back-end para gerenciar uma lista de tarefas.
 
 Para uma experiência completa, siga o passo-a-passo abaixo para iniciar o servidor e, depois, inicie a [interface front-end](https://github.com/rafittu/keevo-front-to-do) para interagir com a API!
 
@@ -41,11 +41,11 @@ Após cadastro e autenticação na API, o usuário consegue acessar o CRUD para 
 - Criar uma tarefa:
 ```
 {
-	"title": "Keevo To-Do",
-	"description": "Develop a fullstack to-do list app",
+	"title": "Learn Quantum Computing",
+	"description": "Learn quantum computing with Python and IBM Quantum Experience using Qiskit",
 	"priority": "HIGH",
-	"dueDate": "2024-02-17",
-	"categories": ["WORK", "PROJECTS"]
+	"dueDate": "2024-04-18",
+	"categories": ["STUDIES", "PROJECTS"]
 }
 ```
 

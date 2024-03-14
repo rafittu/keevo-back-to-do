@@ -153,7 +153,7 @@ export class TaskRepository implements ITaskRepository {
     } = updateTaskDto;
 
     try {
-      if (categories.length) {
+      if (categories && categories.length) {
         await this.prisma.taskCategory.deleteMany({
           where: {
             task: {
