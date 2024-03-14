@@ -4,7 +4,7 @@
 
 <br>
 
-Este projeto consiste em uma API back-end como parte de um [desafio técnico](https://github.com/keevosoftwares/desafio-fullstack) para gerenciar uma lista de tarefas.
+Este projeto consiste em uma API back-end para gerenciar uma lista de tarefas.
 
 Para uma experiência completa, siga o passo-a-passo abaixo para iniciar o servidor e, depois, inicie a [interface front-end](https://github.com/rafittu/keevo-front-to-do) para interagir com a API!
 
