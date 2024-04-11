@@ -10,7 +10,7 @@ Além disso, a API realiza integração com a [API ALMA](https://github.com/rafi
 
 Inspirada na cultura mineira, onde "um trem" pode significar qualquer coisa, celebramos a riqueza regional de Minas Gerais incorporando-a em uma solução tecnológica que visa simplificar e organizar as atividades cotidianas dos usuários!
 
-Para uma experiência completa, siga o passo-a-passo abaixo para iniciar o servidor e, depois, inicie a [interface front-end](https://github.com/rafittu/keevo-front-to-do) para interagir com a API!
+Para uma experiência completa, siga o passo-a-passo abaixo para iniciar o servidor e, depois, inicie a [interface front-end](https://github.com/rafittu/front-um-trem-to-do) para interagir com a API!
 
 <br>
 
@@ -87,13 +87,13 @@ Após cadastro e autenticação na API, o usuário consegue acessar o CRUD para 
 Clonando o repositório:
 
 ```bash
-$ git clone git@github.com:rafittu/keevo-back-to-do.git
+$ git clone git@github.com:rafittu/back-um-trem-to-do.git
 ```
 
 Instalando as dependências:
 
 ```bash
-$ cd back-to-do
+$ cd back-um-trem-to-do
 $ npm install
 ```
 
@@ -157,7 +157,7 @@ A documentação completa da API com suas rotas e exemplos está disponível atr
 
 ## Uso
 
-Com a [API externa](https://github.com/rafittu/back-alma) e a Back-end To-Do List em execução, você pode também iniciar a [interface front-end](https://github.com/rafittu/keevo-front-to-do) e começar a explorar as funcionalidades!
+Com a [API externa](https://github.com/rafittu/back-alma) e a Back-end To-Do List em execução, você pode também iniciar a [interface front-end](https://github.com/rafittu/front-um-trem-to-do) e começar a explorar as funcionalidades!
 
 <br>
 
